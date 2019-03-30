@@ -1,0 +1,42 @@
+#!/bin/bash
+cd ~
+. ~/.gcs-x2go
+[ -z "$SERVERNAME" ] && exit 1
+export DEBIAN_FRONTEND=noninteractive
+sudo apt install debootstrap -y
+sudo debootstrap stretch $SERVERNAME
+sudo mount --bind /dev/pts $SERVERNAME/dev/pts
+sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
+sudo mount --bind /proc $SERVERNAME/proc
+sudo mount --bind /sys $SERVERNAME/sys
+sudo mkdir -p $SERVERNAME-home
+sudo mount --bind $SERVERNAME-home $SERVERNAME/home
+echo "Set password for root account:"
+sudo chroot $SERVERNAME passwd
+awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+sudo chroot $SERVERNAME apt update
+echo 'keyboard-configuration  keyboard-configuration/model    select  Generic 105-key (Intl) PC' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'keyboard-configuration  keyboard-configuration/modelcode        string  pc105' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'keyboard-configuration  keyboard-configuration/xkb-keymap       select  de' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'keyboard-configuration  keyboard-configuration/variant  select  German' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'keyboard-configuration  keyboard-configuration/layout   select  German' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'locales locales/default_environment_locale      select  C.UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
+echo 'locales locales/locales_to_be_generated multiselect     de_DE.UTF-8 UTF-8, en_US.UTF-8 UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
+sudo chroot $SERVERNAME apt install locales -d -y
+sudo chroot $SERVERNAME apt install locales -y
+sudo chroot $SERVERNAME apt clean
+sudo chroot $SERVERNAME apt dist-upgrade -d -y
+sudo chroot $SERVERNAME apt upgrade -y
+sudo chroot $SERVERNAME apt dist-upgrade -y
+sudo chroot $SERVERNAME apt clean
+sudo chroot $SERVERNAME apt install xfce4 xfce4-terminal thunderbird firefox-esr libreoffice evince rsync vim less screen openssh-server net-tools dirmngr mc x2goclient -y
+sudo chroot $SERVERNAME apt clean
+sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -d -y
+sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
+sudo chroot $SERVERNAME apt clean
+sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
+echo "Set password for account '$USERNAME':"
+sudo chroot $SERVERNAME passwd $USERNAME
+sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
+sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
+sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
