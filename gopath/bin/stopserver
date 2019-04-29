@@ -2,7 +2,10 @@
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
+if [ "$SERVER_USE_ROOT" = "true" ] ; then
+	export SERVERNAME="/$SERVERNAME"
+fi
 sudo chroot $SERVERNAME service ssh stop
 sudo chroot $SERVERNAME killall -u $USERNAME gpg-agent
 # sudo chroot $SERVERNAME killall -u $USERNAME
-sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
+sudo umount -r $SERVERNAME
