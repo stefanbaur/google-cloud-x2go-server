@@ -15,8 +15,7 @@ sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
 sudo mkdir -p $HOMEDIR_ROOT
 sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
-echo "Set password for root account:"
-while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done
+sudo chroot $SERVERNAME passwd -l root
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
 sudo chroot $SERVERNAME apt update
 echo 'keyboard-configuration  keyboard-configuration/model    select  Generic 105-key (Intl) PC' | sudo chroot $SERVERNAME debconf-set-selections
@@ -39,6 +38,8 @@ sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-x
 sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
 sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
+echo "Set password for root account:"
+while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done
 echo "Set password for account '$USERNAME':"
 while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done
 sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
