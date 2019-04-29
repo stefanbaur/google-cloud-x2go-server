@@ -3,4 +3,6 @@ cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
 sudo chroot $SERVERNAME service ssh stop
+sudo chroot $SERVERNAME killall -u $USERNAME gpg-agent
+# sudo chroot $SERVERNAME killall -u $USERNAME
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
