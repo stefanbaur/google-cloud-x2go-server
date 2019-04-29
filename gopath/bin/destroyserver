@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/bash -e
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
 sudo chroot $SERVERNAME service ssh stop
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
 sudo rm -rf $SERVERNAME
+echo "All done."
