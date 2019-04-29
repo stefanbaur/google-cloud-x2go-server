@@ -13,7 +13,7 @@ sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
-sudo mkdir -p $HOMEDIR_ROOT/etc
+sudo mkdir -p $HOMEDIR_ROOT/etc/ssh
 sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
 sudo chroot $SERVERNAME passwd -l root
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
@@ -38,6 +38,9 @@ sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-x
 sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
 sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
+if [ -d $HOMEDIR_ROOT/etc/ssh/ ] ; then
+	sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/ssh/
+fi
 if [ -f $HOMEDIR_ROOT/etc/shadow ] ; then
 	sudo sed -e '/^root:/d' -i $SERVERNAME/etc/shadow
 	sudo grep '^root:' $HOMEDIR_ROOT/etc/shadow | sudo tee -a $SERVERNAME/etc/shadow >/dev/null
@@ -53,6 +56,7 @@ else
 	while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done
 	sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
 fi
+sudo cp -a $SERVERNAME/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
