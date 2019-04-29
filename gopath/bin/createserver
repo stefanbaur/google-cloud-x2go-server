@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
@@ -12,7 +12,7 @@ sudo mount --bind /sys $SERVERNAME/sys
 sudo mkdir -p $SERVERNAME-home
 sudo mount --bind $SERVERNAME-home $SERVERNAME/home
 echo "Set password for root account:"
-sudo chroot $SERVERNAME passwd
+while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
 sudo chroot $SERVERNAME apt update
 echo 'keyboard-configuration  keyboard-configuration/model    select  Generic 105-key (Intl) PC' | sudo chroot $SERVERNAME debconf-set-selections
@@ -36,7 +36,8 @@ sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-x
 sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
 echo "Set password for account '$USERNAME':"
-sudo chroot $SERVERNAME passwd $USERNAME
+while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done
 sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
+echo "Installation complete."
