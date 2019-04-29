@@ -6,5 +6,5 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
 sudo chroot $SERVERNAME service ssh stop
-sudo umount -r $SERVERNAME
+sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
 sudo rm -rf $SERVERNAME && echo "All done."
