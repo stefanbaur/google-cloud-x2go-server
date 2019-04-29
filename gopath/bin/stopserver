@@ -6,13 +6,15 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
 sudo chroot $SERVERNAME service ssh stop
-sudo chroot $SERVERNAME killall -u $USERNAME -w gpg-agent
 # sudo chroot $SERVERNAME killall -u $USERNAME -w 
+if sudo chroot $SERVERNAME ps -C gpg-agent ; then
+	sudo chroot $SERVERNAME killall -u $USERNAME -w gpg-agent
+fi
 sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys 
-while ! sudo umount $SERVERNAME/home ; do
+while ! grep -q "$SERVERNAME/home" /etc/mtab && sudo umount $SERVERNAME/home ; do
 	sudo lsof | grep "$SERVERNAME/home"
 	sleep 1
 done
