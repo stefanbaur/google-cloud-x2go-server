@@ -10,5 +10,5 @@ sudo chroot $SERVERNAME killall -u $USERNAME gpg-agent
 # sudo chroot $SERVERNAME killall -u $USERNAME
 sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
-sudo cp -a $SERVERNAME/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
+sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
