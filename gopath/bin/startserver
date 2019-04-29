@@ -11,7 +11,7 @@ sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
 sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
-sudo cp -a $HOMEDIR_ROOT/etc/ $SERVERNAME/etc/shadow
+sudo cp -a $HOMEDIR_ROOT/etc/shadow $SERVERNAME/etc/
 sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
 sudo chroot $SERVERNAME service ssh start
 sudo chroot $SERVERNAME ssh -R2345:127.0.0.1:222 -p $REMOTEPORT -l $REMOTEUSER $REMOTESERVER
