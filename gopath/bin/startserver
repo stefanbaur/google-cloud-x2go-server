@@ -2,10 +2,14 @@
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
+export HOMEDIR_ROOT=$SERVERNAME-home
+if [ "$SERVER_USE_ROOT" = "true" ] ; then
+	export SERVERNAME="/$SERVERNAME"
+fi
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
-sudo mount --bind $SERVERNAME-home $SERVERNAME/home
+sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
 sudo chroot $SERVERNAME service ssh start
 sudo chroot $SERVERNAME ssh -R2345:127.0.0.1:222 -p $REMOTEPORT -l $REMOTEUSER $REMOTESERVER

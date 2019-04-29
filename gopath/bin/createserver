@@ -3,14 +3,18 @@ cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
 export DEBIAN_FRONTEND=noninteractive
+export HOMEDIR_ROOT=$SERVERNAME-home
+if [ "$SERVER_USE_ROOT" = "true" ] ; then
+	export SERVERNAME="/$SERVERNAME"
+fi
 sudo apt install debootstrap -y
 sudo debootstrap stretch $SERVERNAME
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
-sudo mkdir -p $SERVERNAME-home
-sudo mount --bind $SERVERNAME-home $SERVERNAME/home
+sudo mkdir -p $HOMEDIR_ROOT
+sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
 echo "Set password for root account:"
 while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
