@@ -6,6 +6,10 @@ export HOMEDIR_ROOT=$SERVERNAME-home
 if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
+if ! [ -x /usr/bin/lsof ]; then
+	sudo apt update
+	sudo apt install lsof
+fi
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
