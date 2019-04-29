@@ -8,4 +8,5 @@ fi
 sudo chroot $SERVERNAME service ssh stop
 sudo chroot $SERVERNAME killall -u $USERNAME gpg-agent
 # sudo chroot $SERVERNAME killall -u $USERNAME
+sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
