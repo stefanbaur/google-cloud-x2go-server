@@ -2,7 +2,7 @@
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
-export HOMEDIR_ROOT=$SERVERNAME-home
+export HOMEDIR_ROOT=~/$SERVERNAME-home
 if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi

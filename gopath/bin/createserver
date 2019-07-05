@@ -5,7 +5,7 @@ cd ~
 [ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="stretch"
 
 export DEBIAN_FRONTEND=noninteractive
-export HOMEDIR_ROOT=$SERVERNAME-home
+export HOMEDIR_ROOT=~/$SERVERNAME-home
 if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
