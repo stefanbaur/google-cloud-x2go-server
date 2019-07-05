@@ -64,7 +64,7 @@ else
 	sudo mkdir -p $HOMEDIR_ROOT/etc/ssh
 fi
 if [ -d $HOMEDIR_ROOT/root/.ssh/ ] ; then
-	sudo cp -a $HOMEDIR_ROOT/root/./ssh $SERVERNAME/root
+	sudo cp -a $HOMEDIR_ROOT/root/.ssh $SERVERNAME/root
 else
 	sudo mkdir -p $HOMEDIR_ROOT/root/.ssh
 	sudo chmod 700 $HOMEDIR_ROOT/root/.ssh
