@@ -37,6 +37,11 @@ sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -d -y
 sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
 sudo chroot $SERVERNAME apt clean
+wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+sudo chroot $SERVERNAME apt update
+sudo chroot $SERVERNAME apt install palemoon -y
+sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
 if [ -d $HOMEDIR_ROOT/etc/ssh/ ] ; then
 	sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
