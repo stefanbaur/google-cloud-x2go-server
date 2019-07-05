@@ -7,4 +7,4 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then
 fi
 sudo chroot $SERVERNAME service ssh stop
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
-sudo rm -rf $SERVERNAME && echo "All done."
+sudo rm -rf --one-file-system $SERVERNAME && echo "All done."
