@@ -7,6 +7,7 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
 if ! [ -x /usr/bin/lsof ]; then
+	echo "lsof not found, installing ..."
 	sudo apt update
 	sudo apt install lsof
 fi
