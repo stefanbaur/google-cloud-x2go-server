@@ -2,13 +2,15 @@
 cd ~
 . ~/.gcs-x2go
 [ -z "$SERVERNAME" ] && exit 1
+[ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="stretch"
+
 export DEBIAN_FRONTEND=noninteractive
 export HOMEDIR_ROOT=$SERVERNAME-home
 if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
 sudo apt install debootstrap -y
-sudo debootstrap stretch $SERVERNAME
+sudo debootstrap $CHROOTDEBVERSION $SERVERNAME
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
@@ -17,6 +19,9 @@ sudo mkdir -p $HOMEDIR_ROOT/etc
 sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
 sudo chroot $SERVERNAME passwd -l root
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+if [ "$CHROOTDEBVERSION" = "buster" ]; then
+	sudo sed -e 's/stretch/buster/g' -i $SERVERNAME/etc/apt/sources.list
+fi
 sudo chroot $SERVERNAME apt update
 echo 'keyboard-configuration  keyboard-configuration/model    select  Generic 105-key (Intl) PC' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'keyboard-configuration  keyboard-configuration/modelcode        string  pc105' | sudo chroot $SERVERNAME debconf-set-selections
@@ -34,11 +39,21 @@ sudo chroot $SERVERNAME apt dist-upgrade -y
 sudo chroot $SERVERNAME apt clean
 sudo chroot $SERVERNAME apt install xfce4 xfce4-terminal thunderbird firefox-esr libreoffice evince rsync vim less screen openssh-server net-tools dirmngr mc x2goclient -y
 sudo chroot $SERVERNAME apt clean
-sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -d -y
-sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
+if [ "$CHROOTDEBVERSION" = "buster" ]; then
+	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
+	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
+else
+	sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -d -y
+	sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
+fi
 sudo chroot $SERVERNAME apt clean
-wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+if [ "$CHROOTDEBVERSION" = "buster" ]; then
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_Testing/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_Testing/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+else
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+fi
 sudo chroot $SERVERNAME apt update
 sudo chroot $SERVERNAME apt install palemoon -y
 sudo chroot $SERVERNAME apt clean
