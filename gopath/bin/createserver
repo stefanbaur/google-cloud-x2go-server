@@ -55,8 +55,10 @@ else
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
 fi
 sudo chroot $SERVERNAME apt update
-sudo chroot $SERVERNAME apt install palemoon -y
-sudo chroot $SERVERNAME apt clean
+if sudo chroot $SERVERNAME apt search '^palemoon$' | grep -q palemoon ; then
+	sudo chroot $SERVERNAME apt install palemoon -y
+	sudo chroot $SERVERNAME apt clean
+fi
 sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
 if [ -d $HOMEDIR_ROOT/etc/ssh/ ] ; then
 	sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
