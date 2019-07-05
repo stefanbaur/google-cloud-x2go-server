@@ -7,4 +7,8 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then
 fi
 sudo chroot $SERVERNAME service ssh stop
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
+while ! grep -q "$SERVERNAME/home" /etc/mtab && sudo umount $SERVERNAME/home ; do
+	sudo lsof | grep "$SERVERNAME/home"
+	sleep 1
+done
 sudo rm -rf --one-file-system $SERVERNAME && echo "All done."
