@@ -11,9 +11,10 @@ sudo chroot $SERVERNAME service ssh stop
 if sudo chroot $SERVERNAME ps -C gpg-agent ; then
 	sudo chroot $SERVERNAME killall -u $USERNAME -w gpg-agent
 fi
-sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/
+sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/ $HOMEDIR_ROOT/root/.ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
+sudo cp -a $SERVERNAME/root/.ssh $HOMEDIR_ROOT/root/
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys 
 while ! grep -q "$SERVERNAME/home" /etc/mtab && sudo umount $SERVERNAME/home ; do
 	sudo lsof | grep "$SERVERNAME/home"
