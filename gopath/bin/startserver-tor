@@ -1,7 +1,7 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main
 sudo chroot $SERVERNAME service tor start
-toraddress=$(cat /var/lib/tor/hidden_services/SSH_server/hostname)
+toraddress=$(cat $SERVERNAME/var/lib/tor/hidden_services/SSH_server/hostname)
 echo "You can now connect using the command 'torsocks ssh -p 222 $USERNAME@$toraddress' from a torified client."
 echo "To spell the TOR address out over the phone, use the following mnemonics:"
 spellout-tor $toraddress
