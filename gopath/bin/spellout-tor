@@ -1,0 +1,95 @@
+#!/bin/bash
+function name4char {
+	case "$1" in
+		"a")	echo -n "Adam"
+			;;
+		"b")	echo -n "Berta"
+			;;
+		"c")	echo -n "Charlie"
+			;;
+		"d")	echo -n "Daniel"
+			;;
+		"e")	echo -n "Emma"
+			;;
+		"f")	echo -n "Felix"
+			;;
+		"g")	echo -n "Gaby"
+			;;
+		"h")	echo -n "Heidi"
+			;;
+		"i")	echo -n "Iris"
+			;;
+		"j")	echo -n "Jacob"
+			;;
+		"k")	echo -n "Kevin"
+			;;
+		"l")	echo -n "Lisa"
+			;;
+		"m") 	echo -n "Mike"
+			;;
+		"n")	echo -n "Nathan"
+			;;
+		"o")	echo -n "Oscar"
+			;;
+		"p")	echo -n "Peter"
+			;;
+		"q")	echo -n "Quincy"
+			;;
+		"r")	echo -n "Romeo"
+			;;
+		"s")	echo -n "Samuel"
+			;;
+		"t")	echo -n "Theodor"
+			;;
+		"u")	echo -n "Ursula"
+			;;
+		"v")	echo -n "Victor"
+			;;
+		"w")	echo -n "Waldo"
+			;;
+		"x")	echo -n "Xaver"
+			;;
+		"y")	echo -n "Yolanda"
+			;;
+		"z")	echo -n "Zora"
+			;;
+		"2")	echo -n "Drama"
+			;;
+		"3")	echo -n "Experiment"
+			;;
+		"4")	echo -n "Generation"
+			;;
+		"5")	echo -n "Material"
+			;;
+		"6")	echo -n "November"
+			;;
+		"7")	echo -n "Winter"
+			;;
+		".")	exit
+			;;
+	esac
+	echo -en " "
+}
+
+url=$1
+
+# make sure all chars in url are lowercase
+url=${url,,}
+
+echo -en "Version 1\n"
+
+groupcount=1
+# go through the entire url string, char by char, and list the names
+for (( i=0; i<${#url}; i++ )); do
+	# for each group of four chars, print a header indicating the line number
+	if [ $(($i % 4)) == 0 ] ; then
+		# only if we're not the first line, add a line break before printing the line number
+		if [ $groupcount -gt 1 ] ; then
+			echo -en "\n"
+		fi
+		echo -en "$groupcount: "
+		groupcount=$((groupcount+1))
+	fi
+	name4char "${url:$i:1}"
+done
+echo -en "\n"

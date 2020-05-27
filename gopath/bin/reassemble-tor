@@ -1,0 +1,59 @@
+#!/bin/bash
+
+function charswitcher {
+	outchar=""
+	while [ -z "$outchar" ]; do
+		read -s -n 1 tempchar
+		# make sure char is in lowercase
+		tempchar=${tempchar,,}
+		if [ "$tempchar" == "$1" ]; then
+			outchar="$3"
+		elif [ "$tempchar" == "$2" ]; then
+			outchar="$4"
+		else 
+			echo "ERROR"
+		fi
+	done
+	echo -en "$outchar"
+}
+
+echo -en "Version 1\n"
+echo 'Press "#" to delete last character.'
+echo 'Press "." to quit.'
+
+# read character by character until "." is pressed
+while true; do
+	read -s -n 1 inchar
+	# make sure char is in lowercase
+	inchar=${inchar,,}
+	# for the ambiguous choices, ask again
+	case "$inchar" in
+		"d")	echo '"D_a_niel" / "D_r_ama"?'
+			outstring+=$(charswitcher a r d 2)
+			;;
+		"e")	echo '"E_m_ma" / "E_x_periment"?'
+			outstring+=$(charswitcher m x e 3)
+			;;
+		"g")	echo '"G_a_by" / "G_e_neration"?'
+			outstring+=$(charswitcher a e g 4)
+			;;
+		"m")	echo '"M_i_ke" / "M_a_terial"?'
+			outstring+=$(charswitcher i a m 5)
+			;;
+		"n")	echo '"N_a_than" / "N_o_vember"?'
+			outstring+=$(charswitcher a o n 6)
+			;;
+		"w")	echo '"W_a_ldo" / "W_i_nter"?'
+			outstring+=$(charswitcher a i w 7)
+			;;
+		"#")	outstring=${outstring%?} # delete last char
+			;;
+		".")	echo "Result: ${outstring}.onion" # output full address
+			exit
+			;;
+		*)	outstring+=$inchar # all non-ambiguous chars get concatenated here
+			;;
+	esac
+	# print current string so user has a chance to see what they typed/selected
+	echo "$outstring"
+done
