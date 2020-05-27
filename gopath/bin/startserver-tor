@@ -1,3 +1,4 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main
-sudo chroot $SERVERNAME ssh -R2345:127.0.0.1:222 -p $REMOTEPORT -l $REMOTEUSER $REMOTESERVER
+sudo chroot $SERVERNAME service tor start
+cat /var/lib/tor/hidden_services/SSH_server/hostname
