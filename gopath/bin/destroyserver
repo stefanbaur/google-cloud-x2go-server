@@ -5,6 +5,7 @@ cd ~
 if [ "$SERVER_USE_ROOT" = "true" ] ; then
 	export SERVERNAME="/$SERVERNAME"
 fi
+sudo chroot $SERVERNAME service tor stop
 sudo chroot $SERVERNAME service ssh stop
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
 while grep -q "$SERVERNAME/home" /etc/mtab ; do
