@@ -88,9 +88,9 @@ else
 fi
 
 sudo chroot $SERVERNAME sudo -u debian-tor mkdir /var/lib/tor/hidden_services
-echo '# Hidden Service SSH_Server'>>$SERVERNAME/etc/tor/torrc
-echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server'>>$SERVERNAME/etc/tor/torrc
-echo 'HiddenServicePort 222'>>$SERVERNAME/etc/tor/torrc
+echo '# Hidden Service SSH_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
+echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
+echo 'HiddenServicePort 222' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
 
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
