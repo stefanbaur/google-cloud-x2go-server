@@ -87,7 +87,7 @@ else
 	sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
 fi
 
-sudo chroot $SERVERNAME sudo debian-tor mkdir /var/lib/tor/hidden_services
+sudo chroot $SERVERNAME sudo -u debian-tor mkdir /var/lib/tor/hidden_services
 echo '# Hidden Service SSH_Server'>>$SERVERNAME/etc/tor/torrc
 echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server'>>$SERVERNAME/etc/tor/torrc
 echo 'HiddenServicePort 222'>>$SERVERNAME/etc/tor/torrc
