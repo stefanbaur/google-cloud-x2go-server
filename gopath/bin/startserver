@@ -1,24 +1,2 @@
 #!/bin/bash
-cd ~
-. ~/.gcs-x2go
-[ -z "$SERVERNAME" ] && exit 1
-export HOMEDIR_ROOT=~/$SERVERNAME-home
-if [ "$SERVER_USE_ROOT" = "true" ] ; then
-	export SERVERNAME="/$SERVERNAME"
-fi
-if ! [ -x /usr/bin/lsof ]; then
-	echo "lsof not found, installing ..."
-	sudo apt update
-	sudo apt install lsof
-fi
-sudo mount --bind /dev/pts $SERVERNAME/dev/pts
-sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
-sudo mount --bind /proc $SERVERNAME/proc
-sudo mount --bind /sys $SERVERNAME/sys
-sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
-sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/ $HOMEDIR_ROOT/root/.ssh/
-sudo cp -a $HOMEDIR_ROOT/etc/shadow $SERVERNAME/etc/
-sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
-sudo cp -a $HOMEDIR_ROOT/root/.ssh $SERVERNAME/root/
-sudo chroot $SERVERNAME service ssh start
-sudo chroot $SERVERNAME ssh -R2345:127.0.0.1:222 -p $REMOTEPORT -l $REMOTEUSER $REMOTESERVER
+echo "The 'startserver' command has been replaced by 'startserver-tor' and 'startserver-reversetunnel'.  Please pick the one that suits you best."
