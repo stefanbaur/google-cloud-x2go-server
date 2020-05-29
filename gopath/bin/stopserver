@@ -16,7 +16,7 @@ sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/ $HOMEDIR_ROOT/root/.ssh/ $HOMEDIR_ROOT/var/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/root/.ssh $HOMEDIR_ROOT/root/
-sudo cp -a $SERVERNAME /var/lib/tor/hidden_services/SSH_server $HOMEDIR_ROOT/var/lib/tor/hidden_services/
+sudo cp -a $SERVERNAME/var/lib/tor/hidden_services/SSH_server $HOMEDIR_ROOT/var/lib/tor/hidden_services/
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys 
 while grep -q "$SERVERNAME/home" /etc/mtab ; do
 	while ! sudo umount $SERVERNAME/home ; do
