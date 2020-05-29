@@ -95,6 +95,8 @@ echo 'HiddenServiceNonAnonymousMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >
 echo'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
 echo'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
 
+sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab
+
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
