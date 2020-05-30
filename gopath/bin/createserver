@@ -14,7 +14,7 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then # not using / will make the actual ser
 	export SERVERNAME="/$SERVERNAME"
 fi
 
-sudo apt install debootstrap -y # install debootstrap, in case it's not there yet
+sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case they're not there yet
 sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
 
 # now we need some bindmounts or else certain things won't work inside the changeroot

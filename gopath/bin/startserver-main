@@ -9,7 +9,6 @@ if [ "$SERVER_USE_ROOT" = "true" ] ; then # prepend / if server changeroot is in
 	export SERVERNAME="/$SERVERNAME"
 fi
 
-# FIXME TODO this should get installed by createserver
 # check if lsof is installed, if not install it
 if ! [ -x /usr/bin/lsof ]; then
 	echo "lsof not found, installing ..."
