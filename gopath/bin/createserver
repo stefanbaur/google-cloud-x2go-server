@@ -135,8 +135,8 @@ echo '# Hidden Service SSH_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev
 echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # directory where the service config is created/stored
 echo 'HiddenServicePort 222' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # any other port than 22 will do (22 is in use on the host), let's stick with 222
 echo 'HiddenServiceNonAnonymousMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # our server doesn't have to be anonymous, so let's enable this ...
-echo'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # ... because it allows "Single Hop Mode" - actually, still 3 hops, but that's better than 6 hops
-echo'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # a TOR node in Non-Anonymous Mode will refuse to start if it has a local Socks listener, so disable it
+echo 'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # ... because it allows "Single Hop Mode" - actually, still 3 hops, but that's better than 6 hops
+echo 'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # a TOR node in Non-Anonymous Mode will refuse to start if it has a local Socks listener, so disable it
 
 sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2Go complains when trying to suspend a session (even though fuse mountpoints don't work in a changeroot)
 
