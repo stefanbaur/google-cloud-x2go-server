@@ -1,28 +1,44 @@
 #!/bin/bash -e
-cd ~
-. ~/.gcs-x2go
-[ -z "$SERVERNAME" ] && exit 1
-[ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="stretch"
+# for safety reasons, abort on all errors -> "-e"
+cd ~ # just to play it safe, we'll chdir to our own homedir
+. ~/.gcs-x2go # now let's source the config file
 
-export DEBIAN_FRONTEND=noninteractive
-export HOMEDIR_ROOT=~/$SERVERNAME-home
-if [ "$SERVER_USE_ROOT" = "true" ] ; then
+[ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
+[ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="stretch" # if no specific version has been requested, assume stretch, as that is what google uses at the moment
+
+export DEBIAN_FRONTEND=noninteractive # make sure apt and debconf don't bug us with interactive popups during our scripted install
+export HOMEDIR_ROOT=~/$SERVERNAME-home # the home directory for our server goes into a subdirectory of our own home directory, to make it persistent
+# (also, putting it in a separate directory and bind-mounting it later on will allow us to query how much of our storage capacity is available, even from inside the changeroot environment)
+
+if [ "$SERVER_USE_ROOT" = "true" ] ; then # not using / will make the actual server persistent as well, and thus faster to spawn, but eats up more home directory space 
 	export SERVERNAME="/$SERVERNAME"
 fi
-sudo apt install debootstrap -y
-sudo debootstrap $CHROOTDEBVERSION $SERVERNAME
+
+sudo apt install debootstrap -y # install debootstrap, in case it's not there yet
+sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
+
+# now we need some bindmounts or else certain things won't work inside the changeroot
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
 sudo mount --bind /proc $SERVERNAME/proc
 sudo mount --bind /sys $SERVERNAME/sys
-sudo mkdir -p $HOMEDIR_ROOT/etc
-sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home
-sudo chroot $SERVERNAME passwd -l root
+
+sudo mkdir -p $HOMEDIR_ROOT/etc # this is for later on - at the end of this script, as well as everytime when stopping the server, we copy our config data from /etc (like shadow files) to the persistent homedir path
+
+sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home # here goes our homedir bind mount 
+
+sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no one can mess with it before we're done
+
+# prepare a sources.list for us, based on the one present in our host environment
 awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
-if [ "$CHROOTDEBVERSION" = "buster" ]; then
+if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace stretch with buster if requested
 	sudo sed -e 's/stretch/buster/g' -i $SERVERNAME/etc/apt/sources.list
 fi
-sudo chroot $SERVERNAME apt update
+
+sudo chroot $SERVERNAME apt update # now let's make the new sources.list known to apt and pull in repo data
+
+# now let's preseed some packages
+# FIXME TODO this should be part of ~/.gcs-x2go, at least we should offer an option to override our defaults there
 echo 'keyboard-configuration  keyboard-configuration/model    select  Generic 105-key (Intl) PC' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'keyboard-configuration  keyboard-configuration/modelcode        string  pc105' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'keyboard-configuration  keyboard-configuration/xkb-keymap       select  de' | sudo chroot $SERVERNAME debconf-set-selections
@@ -30,15 +46,25 @@ echo 'keyboard-configuration  keyboard-configuration/variant  select  German' | 
 echo 'keyboard-configuration  keyboard-configuration/layout   select  German' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'locales locales/default_environment_locale      select  C.UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'locales locales/locales_to_be_generated multiselect     de_DE.UTF-8 UTF-8, en_US.UTF-8 UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
-sudo chroot $SERVERNAME apt install locales -d -y
-sudo chroot $SERVERNAME apt install locales -y
-sudo chroot $SERVERNAME apt clean
-sudo chroot $SERVERNAME apt dist-upgrade -d -y
-sudo chroot $SERVERNAME apt upgrade -y
-sudo chroot $SERVERNAME apt dist-upgrade -y
-sudo chroot $SERVERNAME apt clean
+
+# now let's install locales first, to make the STDERR messages about missing locale configuration stop
+sudo chroot $SERVERNAME apt install locales -d -y # fetch
+sudo chroot $SERVERNAME apt install locales -y # install
+sudo chroot $SERVERNAME apt clean # this should be a no-op with apt (apt-get needed it), but it won't hurt
+
+# now let's pull in all updates
+sudo chroot $SERVERNAME apt dist-upgrade -d -y # fetch
+sudo chroot $SERVERNAME apt upgrade -y # install first batch
+sudo chroot $SERVERNAME apt dist-upgrade -y # install second batch
+sudo chroot $SERVERNAME apt clean 
+
+# and finally, let's install the packages needed for an average office desktop
+# FIXME TODO it makes sense to sort this list alphabetically
+# FIXME TODO this should be split into two fetch/install steps
 sudo chroot $SERVERNAME apt install xfce4 xfce4-terminal thunderbird firefox-esr libreoffice evince rsync vim less screen openssh-server net-tools dirmngr mc x2goclient tor sudo -y
 sudo chroot $SERVERNAME apt clean
+
+# for stretch, we'll pull in x2goserver from backports, while buster has x2goserver in the standard repository
 if [ "$CHROOTDEBVERSION" = "buster" ]; then
 	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
 	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
@@ -47,19 +73,30 @@ else
 	sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
 fi
 sudo chroot $SERVERNAME apt clean
+
+# add the key for the appropriate Pale Moon repo for stretch or buster, and add the repo too
 if [ "$CHROOTDEBVERSION" = "buster" ]; then
+	# FIXME TODO s/Debian_Testing/Debian_10/
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_Testing/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_Testing/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
 else
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
 fi
+
+# now update the sources.list info again
 sudo chroot $SERVERNAME apt update
+
+# if adding the Pale Moon repo worked, "palemoon" should now show up as an installable package
 if sudo chroot $SERVERNAME apt search '^palemoon$' | grep -q palemoon ; then
-	sudo chroot $SERVERNAME apt install palemoon -y
+	# FIXME TODO this should be split into two fetch/install steps
+	sudo chroot $SERVERNAME apt install palemoon -y # so let's install it
 	sudo chroot $SERVERNAME apt clean
 fi
-sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash
+
+sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash # create the first regular user account in our changeroot
+
+# if we have SSH server keys and/or ssh client configuration data for root (known_hosts, authorized_keys, ...) stowed away from a previous run, reuse it
 if [ -d $HOMEDIR_ROOT/etc/ssh/ ] ; then
 	sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
 else
@@ -71,34 +108,46 @@ else
 	sudo mkdir -p $HOMEDIR_ROOT/root/.ssh
 	sudo chmod 700 $HOMEDIR_ROOT/root/.ssh
 fi
-if [ -f $HOMEDIR_ROOT/etc/shadow ] ; then
-	sudo sed -e '/^root:/d' -i $SERVERNAME/etc/shadow
-	sudo grep '^root:' $HOMEDIR_ROOT/etc/shadow | sudo tee -a $SERVERNAME/etc/shadow >/dev/null
+
+# we cannot blindly reuse the shadow file from a previous run, as the amount and sequence of user accounts may have changed
+if [ -f $HOMEDIR_ROOT/etc/shadow ] ; then # but if we do have a backup ...
+	sudo sed -e '/^root:/d' -i $SERVERNAME/etc/shadow # then let's delete the current root entry from the shadow file
+	sudo grep '^root:' $HOMEDIR_ROOT/etc/shadow | sudo tee -a $SERVERNAME/etc/shadow >/dev/null # and replace it with the old one
+	# note that this works fine for root, as root always has UID 0
 else
-	echo "Set password for root account:"
-	while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done
+	echo "Set password for root account:" # query for a root password if this is our first run
+	while ! sudo chroot $SERVERNAME passwd ; do sleep 1; done # make sure to ask and ask again until a valid password has been set
 fi
+
+# now we'll repeat that procedure for the first regular user account
 if [ -f $HOMEDIR_ROOT/etc/shadow ] && sudo grep -q "^$USERNAME:" $HOMEDIR_ROOT/etc/shadow ; then
 	sudo sed -e "/^$USERNAME:/d" -i $SERVERNAME/etc/shadow
 	sudo grep "^$USERNAME:" $HOMEDIR_ROOT/etc/shadow | sudo tee -a $SERVERNAME/etc/shadow >/dev/null
+	# FIXME TODO note that while regular user accounts should always start at UID 1000, there is a slight chance of the UID being different
 else
-	echo "Set password for account '$USERNAME':"
-	while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done
-	sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME
+	echo "Set password for account '$USERNAME':" # again, if this is our first run, query for a user password
+	while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done # and make sure it really has been set
+	sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME # now add the user's real name (which is stored in the config file variable) via usermod
 fi
 
-sudo chroot $SERVERNAME sudo -u debian-tor mkdir /var/lib/tor/hidden_services
-echo '# Hidden Service SSH_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
-echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
-echo 'HiddenServicePort 222' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
-echo 'HiddenServiceNonAnonymousMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
-echo'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
-echo'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null
+# now let's prepare the TOR hidden service
+sudo chroot $SERVERNAME sudo -u debian-tor mkdir /var/lib/tor/hidden_services # this directory needs to be created with this particular user
+# this needs to be added to the torrc file
+echo '# Hidden Service SSH_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # header
+echo 'HiddenServiceDir /var/lib/tor/hidden_services/SSH_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # directory where the service config is created/stored
+echo 'HiddenServicePort 222' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # any other port than 22 will do (22 is in use on the host), let's stick with 222
+echo 'HiddenServiceNonAnonymousMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # our server doesn't have to be anonymous, so let's enable this ...
+echo'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # ... because it allows "Single Hop Mode" - actually, still 3 hops, but that's better than 6 hops
+echo'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # a TOR node in Non-Anonymous Mode will refuse to start if it has a local Socks listener, so disable it
 
-sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab
+sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2Go complains when trying to suspend a session (even though fuse mountpoints don't work in a changeroot)
 
+# we're basically done, so let's back up our configuration into the persistent directory
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
+
+# final configuration for our SSH daemon inside the changeroot - make it listen on port 222 as 22 is already in use on the host, and force it to bind to 127.0.0.1 only, as we'll only connect via TOR/reverse SSH Tunnel
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
-sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home
+
+sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
 echo "Installation complete."
