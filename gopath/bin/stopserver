@@ -1,26 +1,37 @@
 #!/bin/bash
-cd ~
-. ~/.gcs-x2go
-[ -z "$SERVERNAME" ] && exit 1
-if [ "$SERVER_USE_ROOT" = "true" ] ; then
+cd ~ # just to play it safe, we'll chdir to our own homedir
+. ~/.gcs-x2go # now let's source the config file
+
+[ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
+
+if [ "$SERVER_USE_ROOT" = "true" ] ; then # prepend / if server changeroot is in root directory
 	export SERVERNAME="/$SERVERNAME"
 fi
+
 export HOMEDIR_ROOT=~/$SERVERNAME-home
+# stop services running in the chroot
 sudo chroot $SERVERNAME service tor stop
 sudo chroot $SERVERNAME service ssh stop
+
 # sudo chroot $SERVERNAME killall -u $USERNAME -w 
+
+# if gpg-agent is still running in the changeroot (it may get spawned by a desktop environment), stop it
 if sudo chroot $SERVERNAME ps -C gpg-agent ; then
 	sudo chroot $SERVERNAME killall -u $USERNAME -w gpg-agent
 fi
+
+#  back up our configuration into the persistent directory
 sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/ $HOMEDIR_ROOT/root/.ssh/ $HOMEDIR_ROOT/var/lib/tor/hidden_services/SSH_server
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
 sudo cp -a $SERVERNAME/root/.ssh $HOMEDIR_ROOT/root/
 sudo cp -a $SERVERNAME/var/lib/tor/hidden_services/SSH_server $HOMEDIR_ROOT/var/lib/tor/hidden_services/
-sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys 
+
+sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys # unmount our bindmounts to clean things up
+
 while grep -q "$SERVERNAME/home" /etc/mtab ; do
-	while ! sudo umount $SERVERNAME/home ; do
-		sudo lsof | grep "$SERVERNAME/home"
-		sleep 1
+	while ! sudo umount $SERVERNAME/home ; do # keep trying to umount it
+		sudo lsof | grep "$SERVERNAME/home" # list open files in the mount path if umount failed
+		sleep 1 # the user needs a moment to read the error message ...
 	done
 done
