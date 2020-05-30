@@ -1,7 +1,11 @@
 #!/bin/bash
-. ~/gopath/bin/startserver-main
-sudo chroot $SERVERNAME service tor start
-toraddress=$(sudo cat $SERVERNAME/var/lib/tor/hidden_services/SSH_server/hostname)
+. ~/gopath/bin/startserver-main # source the main script
+
+sudo chroot $SERVERNAME service tor start # start the TOR daemon in the changeroot
+
+toraddress=$(sudo cat $SERVERNAME/var/lib/tor/hidden_services/SSH_server/hostname) # determine our TOR address
+
+# print message containing next step and the TOR address, as well as the mnemonic version
 echo "You can now connect using the command 'torsocks ssh -p 222 $USERNAME@$toraddress' from a torified client."
 echo "To spell the TOR address out over the phone, use the following mnemonics:"
 spellout-tor $toraddress
