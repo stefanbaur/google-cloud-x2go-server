@@ -59,9 +59,8 @@ sudo chroot $SERVERNAME apt dist-upgrade -y # install second batch
 sudo chroot $SERVERNAME apt clean 
 
 # and finally, let's install the packages needed for an average office desktop
-# FIXME TODO it makes sense to sort this list alphabetically
-# FIXME TODO this should be split into two fetch/install steps
-sudo chroot $SERVERNAME apt install xfce4 xfce4-terminal thunderbird firefox-esr libreoffice evince rsync vim less screen openssh-server net-tools dirmngr mc x2goclient tor sudo -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim x2goclient xfce4 xfce4-terminal -d -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim x2goclient xfce4 xfce4-terminal -y
 sudo chroot $SERVERNAME apt clean
 
 # for stretch, we'll pull in x2goserver from backports, while buster has x2goserver in the standard repository
@@ -76,9 +75,8 @@ sudo chroot $SERVERNAME apt clean
 
 # add the key for the appropriate Pale Moon repo for stretch or buster, and add the repo too
 if [ "$CHROOTDEBVERSION" = "buster" ]; then
-	# FIXME TODO s/Debian_Testing/Debian_10/
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_Testing/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_Testing/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_10/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
 else
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
@@ -89,8 +87,8 @@ sudo chroot $SERVERNAME apt update
 
 # if adding the Pale Moon repo worked, "palemoon" should now show up as an installable package
 if sudo chroot $SERVERNAME apt search '^palemoon$' | grep -q palemoon ; then
-	# FIXME TODO this should be split into two fetch/install steps
-	sudo chroot $SERVERNAME apt install palemoon -y # so let's install it
+	sudo chroot $SERVERNAME apt install palemoon -d -y # so let's fetch ...
+	sudo chroot $SERVERNAME apt install palemoon -y # ... and install it
 	sudo chroot $SERVERNAME apt clean
 fi
 
