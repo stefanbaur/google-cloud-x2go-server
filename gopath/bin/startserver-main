@@ -30,5 +30,6 @@ sudo cp -a $HOMEDIR_ROOT/etc/shadow $SERVERNAME/etc/
 sudo cp -a $HOMEDIR_ROOT/etc/ssh/*_key* $SERVERNAME/etc/ssh/
 sudo cp -a $HOMEDIR_ROOT/root/.ssh $SERVERNAME/root/
 sudo cp -a $HOMEDIR_ROOT/var/lib/tor/hidden_services $SERVERNAME/var/lib/tor/
+sudo chroot $SERVERNAME chown -R debian-tor: /var/lib/tor/hidden_services # this directory and its contents need to be owned by this particular user
 
 sudo chroot $SERVERNAME service ssh start # start ssh server, as we need SSHd both for TOR and for the reverse SSH tunnel

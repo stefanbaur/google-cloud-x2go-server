@@ -129,6 +129,7 @@ else
 fi
 
 # now let's prepare the TOR hidden service
+sudo rm -rf $SERVERNAME/var/lib/tor/hidden_services # delete this if it already exists, so we have a clean state
 sudo chroot $SERVERNAME sudo -u debian-tor mkdir /var/lib/tor/hidden_services # this directory needs to be created with this particular user
 # this needs to be added to the torrc file
 echo '# Hidden Service SSH_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # header
