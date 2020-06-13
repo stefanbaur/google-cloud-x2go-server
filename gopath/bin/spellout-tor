@@ -76,17 +76,15 @@ url=$1
 # make sure all chars in url are lowercase
 url=${url,,}
 
-echo -en "Version 1\n"
+echo -en "Version 1"
 
 groupcount=1
 # go through the entire url string, char by char, and list the names
 for (( i=0; i<${#url}; i++ )); do
 	# for each group of four chars, print a header indicating the line number
 	if [ $(($i % 4)) == 0 ] ; then
-		# only if we're not the first line, add a line break before printing the line number
-		if [ $groupcount -gt 1 ] ; then
-			echo -en "\n"
-		fi
+		# add a line break before printing the line number
+		echo -en "\n"
 		echo -en "$groupcount: "
 		groupcount=$((groupcount+1))
 	fi
