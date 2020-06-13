@@ -85,7 +85,10 @@ for (( i=0; i<${#url}; i++ )); do
 	if [ $(($i % 4)) == 0 ] ; then
 		# add a line break before printing the line number
 		echo -en "\n"
-		echo -en "$groupcount: "
+		# print a groupcount header if we're neither empty nor a dot
+		if [ -n "${url:$i:1}" ] && [ "${url:$i:1}" != "." ]; then
+			echo -en "$groupcount: "
+		fi
 		groupcount=$((groupcount+1))
 	fi
 	name4char "${url:$i:1}"
