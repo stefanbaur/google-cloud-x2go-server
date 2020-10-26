@@ -13,14 +13,13 @@ export HOMEDIR_ROOT=~/$SERVERNAME-home # the home directory for our server goes 
 if [ "$SERVER_USE_ROOT" = "true" ] ; then # not using / will make the actual server persistent as well, and thus faster to spawn, but eats up more home directory space 
 	export SERVERNAME="/$SERVERNAME"
 	CHECKDIR="/"
-fi
 else
 	CHECKDIR="$(pwd)"
 fi
 sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case they're not there yet
 
 if ( (mount | grep "$CHECKDIR" | grep -q "nodev") || (mount | grep "$CHECKDIR" | grep -q "noexec") ) ; then
-	mount -oremount,dev,exec $CHECKDIR # make sure we can run executables and access devices in our install location
+	sudo mount -oremount,dev,exec $CHECKDIR # make sure we can run executables and access devices in our install location
 fi
 
 sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
