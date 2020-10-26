@@ -18,8 +18,16 @@ else
 fi
 sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case they're not there yet
 
-if ( (mount | grep "$CHECKDIR" | grep -q "nodev") || (mount | grep "$CHECKDIR" | grep -q "noexec") ) ; then
-	sudo mount -oremount,dev,exec $CHECKDIR # make sure we can run executables and access devices in our install location
+# make sure we can use the suid bit, run executables and access devices in our install location
+MOUNTTOCHECK=$(df --output=source $CHECKDIR | grep "^/")
+if mount | grep "^${MOUNTTOCHECK} " | grep -q nosuid ; then
+	sudo mount -oremount,suid $MOUNTTOCHECK 
+fi
+if mount | grep "^${MOUNTTOCHECK} " | grep -q noexec ; then
+	sudo mount -oremount,exec $MOUNTTOCHECK
+fi
+if mount | grep "^${MOUNTTOCHECK} " | grep -q nodev ; then
+	sudo mount -oremount,dev $MOUNTTOCHECK
 fi
 
 sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
@@ -134,6 +142,16 @@ else
 	while ! sudo chroot $SERVERNAME passwd $USERNAME; do sleep 1; done # and make sure it really has been set
 	sudo chroot $SERVERNAME usermod -c "$USERREALNAME,,," $USERNAME # now add the user's real name (which is stored in the config file variable) via usermod
 fi
+
+if ! [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_x2goserver ]; then
+	sudo chroot ${SERVERNAME} mkdir -p /home/$USERNAME/.ssh
+	sudo chroot ${SERVERNAME} sudo -u $USERNAME ssh-keygen -f /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME}
+	sudo chroot ${SERVERNAME} cat /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME}.pub | sudo chroot ${SERVERNAME} tee -a /home/${USERNAME}/.ssh/authorized_keys
+	sudo chroot ${SERVERNAME} chown -R ${USERNAME}: /home/${USERNAME}/.ssh
+	sudo chroot ${SERVERNAME} chmod 700 /home/${USERNAME}/.ssh
+	sudo chroot ${SERVERNAME} chmod 600 /home/${USERNAME}/.ssh/authorized_keys
+fi
+
 
 # now let's prepare the TOR hidden service
 sudo rm -rf $SERVERNAME/var/lib/tor/hidden_services # delete this if it already exists, so we have a clean state
