@@ -4,7 +4,7 @@ cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
-[ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="stretch" # if no specific version has been requested, assume stretch, as that is what google uses at the moment
+[ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="buster" # if no specific version has been requested, assume buster, as that is what google uses at the moment
 
 export DEBIAN_FRONTEND=noninteractive # make sure apt and debconf don't bug us with interactive popups during our scripted install
 export HOMEDIR_ROOT=~/$SERVERNAME-home # the home directory for our server goes into a subdirectory of our own home directory, to make it persistent
@@ -12,9 +12,17 @@ export HOMEDIR_ROOT=~/$SERVERNAME-home # the home directory for our server goes 
 
 if [ "$SERVER_USE_ROOT" = "true" ] ; then # not using / will make the actual server persistent as well, and thus faster to spawn, but eats up more home directory space 
 	export SERVERNAME="/$SERVERNAME"
+	CHECKDIR="/"
+fi
+else
+	CHECKDIR="$(pwd)"
+fi
+sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case they're not there yet
+
+if ( (mount | grep "$CHECKDIR" | grep -q "nodev") || (mount | grep "$CHECKDIR" | grep -q "noexec") ) ; then
+	mount -oremount,dev,exec $CHECKDIR # make sure we can run executables and access devices in our install location
 fi
 
-sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case they're not there yet
 sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
 
 # now we need some bindmounts or else certain things won't work inside the changeroot
