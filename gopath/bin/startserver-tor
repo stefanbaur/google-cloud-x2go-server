@@ -1,6 +1,10 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main # source the main script
 
+sudo chroot $SERVERNAME sed -i -e '/^PasswordAuthentication/d' -e '/^PubkeyAuthentication/d' /etc/ssh/sshd_config
+echo -e "PasswordAuthentication no\nPubkeyAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config
+
+sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
 sudo chroot $SERVERNAME service tor start # start the TOR daemon in the changeroot
 
 toraddress=$(sudo cat $SERVERNAME/var/lib/tor/hidden_services/SSH_server/hostname) # determine our TOR address
