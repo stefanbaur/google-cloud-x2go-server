@@ -1,8 +1,42 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main # source the main script
 
-sudo chroot $SERVERNAME sed -i -e '/^PasswordAuthentication/d' -e '/^PubkeyAuthentication/d' /etc/ssh/sshd_config
-echo -e "PasswordAuthentication no\nPubkeyAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config
+# make sure logging in via keyfile is allowed
+sudo chroot $SERVERNAME sed -i -e '/^PubkeyAuthentication/d' /etc/ssh/sshd_config
+echo -e "PubkeyAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config
+
+# install google 2FA
+sudo chroot $SERVERNAME apt install libpam-google-authenticator libqrencode4 qrencode
+
+# enable it if not already done
+sudo chroot $SERVERNAME grep -q pam_google_authenticator.so /etc/pam.d/sshd || \
+sudo chroot $SERVERNAME sed -i -e '/@include common-auth/a auth\trequired\tpam_google_authenticator.so' /etc/pam.d/sshd
+
+# check if our default user already has a google 2FA config file
+if sudo chroot $SERVERNAME test -f /home/$USERNAME/.google_authenticator; then
+	# if yes, show the QR code and the emergency codes
+	sudo chroot $SERVERNAME qrencode -t ansiutf8 "otpauth://totp/${SERVERNAME///}:${USERNAME}@${SERVERNAME///}?secret=$(sudo chroot $SERVERNAME head -n 1 /home/${USERNAME}/.google_authenticator)&digits=6&issuer=${SERVERNAME///}"
+	echo "Emergency codes:"
+	sudo chroot $SERVERNAME grep "^........$" /home/${USERNAME}/.google_authenticator
+else
+	# if not, generate the config file (QR code and emergency codes will be displayed by google's tool)
+	sudo chroot $SERVERNAME sudo -u $USERNAME google-authenticator -t -d -f -r 3 -R 30 -w 3 -e 10 -l $USERNAME@${SERVERNAME///} -i ${SERVERNAME///}
+fi
+
+# check if google authenticator is active for all users; allow password login only if true
+sudo chroot $SERVERNAME sed -i -e '/^PasswordAuthentication/d' -e '/^ChallengeResponseAuthentication/d' /etc/ssh/sshd_config
+for HOMETOCHECK in $(sudo chroot $SERVERNAME getent passwd | awk -F ':' '$6 ~ /^\/home/ { print $6 }'); do
+	if ! sudo chroot $SERVERNAME test -f ${HOMETOCHECK}/.google_authenticator ; then
+		SAFETOENABLEPW="false"
+	fi
+done
+if [ -n "$SAFETOENABLEPW" ]; then
+	echo "At least one user does not have a working 2FA setup. Password/Token logins will be disabled until you fix this."
+	echo -e "PasswordAuthentication no\nChallengeResponseAuthentication no" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config
+else
+	echo "Enabling Password/Token 2FA."
+	echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config
+fi
 
 sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
 sudo chroot $SERVERNAME service tor start # start the TOR daemon in the changeroot
