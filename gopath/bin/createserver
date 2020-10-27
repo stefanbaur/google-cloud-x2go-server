@@ -93,10 +93,10 @@ sudo chroot $SERVERNAME apt clean
 # add the key for the appropriate Pale Moon repo for stretch or buster, and add the repo too
 if [ "$CHROOTDEBVERSION" = "buster" ]; then
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_10/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 else
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 fi
 
 # now update the sources.list info again
@@ -148,7 +148,7 @@ fi
 if ! [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_${SERVERNAME///} ]; then
 	sudo chroot ${SERVERNAME} mkdir -p /home/$USERNAME/.ssh
 	sudo chroot ${SERVERNAME} sudo -u $USERNAME ssh-keygen -f /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}
-	sudo chroot ${SERVERNAME} cat /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}.pub | sudo chroot ${SERVERNAME} tee -a /home/${USERNAME}/.ssh/authorized_keys
+	sudo chroot ${SERVERNAME} cat /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}.pub | sudo chroot ${SERVERNAME} tee -a /home/${USERNAME}/.ssh/authorized_keys >/dev/null
 	sudo chroot ${SERVERNAME} chown -R ${USERNAME}: /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 700 /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 600 /home/${USERNAME}/.ssh/authorized_keys
