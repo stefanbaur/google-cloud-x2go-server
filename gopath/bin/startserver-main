@@ -5,8 +5,24 @@ cd ~ # just to play it safe, we'll chdir to our own homedir
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
 
 export HOMEDIR_ROOT=~/$SERVERNAME-home
+
 if [ "$SERVER_USE_ROOT" = "true" ] ; then # prepend / if server changeroot is in root directory
 	export SERVERNAME="/$SERVERNAME"
+	CHECKDIR="/"
+else
+	CHECKDIR="$(pwd)"
+fi
+
+# make sure we can use the suid bit, run executables and access devices in our install location
+MOUNTTOCHECK=$(df --output=source $CHECKDIR | grep "^/")
+if mount | grep "^${MOUNTTOCHECK} " | grep -q nosuid ; then
+	sudo mount -oremount,suid $MOUNTTOCHECK 
+fi
+if mount | grep "^${MOUNTTOCHECK} " | grep -q noexec ; then
+	sudo mount -oremount,exec $MOUNTTOCHECK
+fi
+if mount | grep "^${MOUNTTOCHECK} " | grep -q nodev ; then
+	sudo mount -oremount,dev $MOUNTTOCHECK
 fi
 
 # check if lsof is installed, if not install it
