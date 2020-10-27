@@ -14,7 +14,7 @@ else
 fi
 
 # make sure we can use the suid bit, run executables and access devices in our install location
-MOUNTTOCHECK=$(df --output=source $CHECKDIR | grep "^/")
+MOUNTTOCHECK=$(df --output=source $CHECKDIR | grep "^/"  || true) # "or true" is needed because bash is called with -e
 if [ -n "$MOUNTTOCHECK" ]; then # an empty string would indicate "overlay" or no match
 	if mount | grep "^${MOUNTTOCHECK} " | grep -q nosuid ; then
 		sudo mount -oremount,suid $MOUNTTOCHECK 
