@@ -20,14 +20,16 @@ sudo apt install debootstrap lsof -y # install debootstrap and lsof, in case the
 
 # make sure we can use the suid bit, run executables and access devices in our install location
 MOUNTTOCHECK=$(df --output=source $CHECKDIR | grep "^/")
-if mount | grep "^${MOUNTTOCHECK} " | grep -q nosuid ; then
-	sudo mount -oremount,suid $MOUNTTOCHECK 
-fi
-if mount | grep "^${MOUNTTOCHECK} " | grep -q noexec ; then
-	sudo mount -oremount,exec $MOUNTTOCHECK
-fi
-if mount | grep "^${MOUNTTOCHECK} " | grep -q nodev ; then
-	sudo mount -oremount,dev $MOUNTTOCHECK
+if [ -n "$MOUNTTOCHECK" ]; then # an empty string would indicate "overlay" or no match
+	if mount | grep "^${MOUNTTOCHECK} " | grep -q nosuid ; then
+		sudo mount -oremount,suid $MOUNTTOCHECK 
+	fi
+	if mount | grep "^${MOUNTTOCHECK} " | grep -q noexec ; then
+		sudo mount -oremount,exec $MOUNTTOCHECK
+	fi
+	if mount | grep "^${MOUNTTOCHECK} " | grep -q nodev ; then
+		sudo mount -oremount,dev $MOUNTTOCHECK
+	fi
 fi
 
 sudo debootstrap $CHROOTDEBVERSION $SERVERNAME # and start the base install
