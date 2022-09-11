@@ -34,6 +34,16 @@ if ! [ -x /usr/bin/lsof ]; then
 	sudo apt install lsof
 fi
 
+# some sanity checks here
+if ! [ -d "$SERVERNAME" ] ; then
+	echo "Server directory not found. You need to run 'createserver' first."
+	exit 1
+fi
+if ! [ -x "$SERVERNAME/bin/bash" ] ; then
+	echo "Executable '/bin/bash' not found (or not executable) inside Server directory '$SERVERNAME'. Something is wrong with your installation. Try running 'createserver'."
+	exit 1
+fi
+
 # now we need some bindmounts or else certain things won't work inside the changeroot
 sudo mount --bind /dev/pts $SERVERNAME/dev/pts
 sudo mount --bind /dev/shm/ $SERVERNAME/dev/shm
