@@ -47,7 +47,7 @@ sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home # here goes our homedir bind mo
 sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no one can mess with it before we're done
 
 # prepare a sources.list for us, based on the one present in our host environment
-awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep 'debian\.org' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
 if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace bullseye with buster if requested
 	sudo sed -e 's/bullseye/buster/g' -i $SERVERNAME/etc/apt/sources.list
 fi
@@ -68,9 +68,9 @@ echo 'keyboard-configuration  keyboard-configuration/layout   select  German' | 
 echo 'locales locales/default_environment_locale      select  C.UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'locales locales/locales_to_be_generated multiselect     de_DE.UTF-8 UTF-8, en_US.UTF-8 UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
 
-# first, we need to install ca-certificates, so apt won't complain about untrusted certs
-sudo chroot $SERVERNAME apt install ca-certificates -d -y # fetch
-sudo chroot $SERVERNAME apt install ca-certificates -y # install
+# first, we need to install ca-certificates, so apt won't complain about untrusted certs, and debian-archive-keyring, so it can check signatures
+sudo chroot $SERVERNAME apt install ca-certificates debian-archive-keyring -d -y # fetch
+sudo chroot $SERVERNAME apt install ca-certificates debian-archive-keyring -y # install
 sudo chroot $SERVERNAME apt clean # this should be a no-op with apt (apt-get needed it), but it won't hurt
 
 # at this moment, it should be possible to re-enable https sources
