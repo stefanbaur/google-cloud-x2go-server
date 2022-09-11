@@ -184,10 +184,6 @@ echo 'SocksPort 0' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # a TOR no
 
 sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2Go complains when trying to suspend a session (even though fuse mountpoints don't work in a changeroot)
 
-# we're basically done, so let's back up our configuration into the persistent directory
-sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
-sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
-
 # final configuration for our SSH daemon inside the changeroot - make it listen on port 222 as 22 is already in use on the host, and force it to bind to 127.0.0.1 only, as we'll only connect via TOR/reverse SSH Tunnel
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
 
@@ -201,4 +197,9 @@ echo '        <property name="general" type="empty">' | sudo tee -a $SERVERNAME/
 echo '	                <property name="use_compositing" type="bool" value="false"/>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
 echo '			        </property>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
 echo '				</channel>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
+
+# we're basically done, so let's back up our configuration into the persistent directory
+sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
+sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
+
 echo "Installation complete."
