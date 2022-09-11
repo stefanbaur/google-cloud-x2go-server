@@ -49,8 +49,9 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 3. Start X2GoClient
 4. Start the Session by double-clicking on the *X2GoGoogleCloud* session tile.
 5. If/when prompted, enter Username, Password, and 2FA code.
-## Recommendation
-Use Palemoon (it's installed automatically) for browsing the web - Chrome/Chromium and Firefox tend to be a bit sluggish via X2Go-NX. This may change once X2Go-KDrive becomes stable.
+## Recommendations
+1. Use Palemoon (it's installed automatically) for browsing the web - Chrome/Chromium and Firefox tend to be a bit sluggish via X2Go-NX. *This may change once X2Go-KDrive becomes stable.*
+2. Keep an eye on your Google Cloud Shell browser window. Google might prompt you "Hey, are you still there?" if you seem to be inactive from their perspective, and if you don't respond, your Google Cloud Shell session will be terminated, crashing your server. Sadly, activity via Tor/SSH doesn't count, it needs to take place within the Google Cloud Shell browser window.
 ## Shutting down
 1. Properly terminate your session from within *X2GoClient*.
 2. Run <code>stopserver</code> on the **Server** (i.e. inside your browser's cloud shell window) 
