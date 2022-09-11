@@ -1,19 +1,19 @@
 # google-cloud-x2go-server
 Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer Google Cloud environment
 ## How to prepare your Google Cloud Shell environment (only needed once per Google Account):
-### Run these commands
+### Run these commands inside the Google Cloud Shell browser window
 	git clone git@github.com:stefanbaur/google-cloud-x2go-server.git
 	test -d gopath && mv gopath gopath_old
 	ln -s google-cloud-x2go-server/gopath gopath
-### Edit the file .gcs-x2go
+### Edit the file ~/.gcs-x2go (again, inside the Google Cloud Shell browser window)
 	export SERVER_USE_ROOT=true
 	export SERVERNAME=demoserver
 	export CHROOTDEBVERSION="bullseye"
 	export USERNAME=demouser
 	export USERREALNAME="John Doe"
 ## How to set up and run the server:
-1. Run this command every time your instance was offline (or if you ran <code>destroyserver</code> before):<code>createserver</code>
-2. To actually start the server, run: <code>startserver-tor</code>
+1. Run this command inside the Google Cloud Shell browser window every time your instance was offline (or if you ran <code>destroyserver</code> before):<code>createserver</code>
+2. To actually start the server, run <code>startserver-tor</code> inside the Google Cloud Shell browser window
 (Note: <code>startserver-reversetunnel</code> is no longer actively tested or maintained, but still provided in case you prefer it over using Tor)
 4. Load the QR code into an authenticator app of your choice
 ## How to prepare the client (only needed once per client)
