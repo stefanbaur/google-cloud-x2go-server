@@ -6,6 +6,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 	test -d gopath && mv gopath gopath_old
 	ln -s google-cloud-x2go-server/gopath gopath
 ### Edit the file ~/.gcs-x2go (again, inside the Google Cloud Shell browser window)
+*Feel free to change the values of <code>SERVERNAME</code>, <code>USERNAME</code>, and <code>USERREALNAME</code>, but remember that setting any of the username or servername values to a name usually associated with you will mean you are no longer anonymous.*
 	export SERVER_USE_ROOT=true
 	export SERVERNAME=demoserver
 	export CHROOTDEBVERSION="bullseye"
