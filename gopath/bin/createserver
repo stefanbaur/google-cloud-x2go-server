@@ -52,7 +52,11 @@ if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace bullseye with buster if re
 	sudo sed -e 's/bullseye/buster/g' -i $SERVERNAME/etc/apt/sources.list
 fi
 
-sudo chroot $SERVERNAME apt update # now let's make the new sources.list known to apt and pull in repo data
+# we need to downgrade from https to http for a moment
+sudo sed -e 's/https/http/g' -i $SERVERNAME/etc/apt/sources.list.old $SERVERNAME/etc/apt/sources.list
+
+# now let's make the new sources.list known to apt and pull in repo data
+sudo chroot $SERVERNAME apt update 
 
 # now let's preseed some packages
 # FIXME TODO this should be part of ~/.gcs-x2go, at least we should offer an option to override our defaults there
@@ -68,6 +72,12 @@ echo 'locales locales/locales_to_be_generated multiselect     de_DE.UTF-8 UTF-8,
 sudo chroot $SERVERNAME apt install ca-certificates -d -y # fetch
 sudo chroot $SERVERNAME apt install ca-certificates -y # install
 sudo chroot $SERVERNAME apt clean # this should be a no-op with apt (apt-get needed it), but it won't hurt
+
+# at this moment, it should be possible to re-enable https sources
+sudo mv $SERVERNAME/etc/apt/sources.list.old $SERVERNAME/etc/apt/sources.list
+
+# now let's make the new sources.list known to apt and pull in repo data
+sudo chroot $SERVERNAME apt update 
 
 # now let's install locales, to make the STDERR messages about missing locale configuration stop
 sudo chroot $SERVERNAME apt install locales -d -y # fetch
