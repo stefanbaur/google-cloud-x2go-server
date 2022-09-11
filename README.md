@@ -1,6 +1,6 @@
 # google-cloud-x2go-server
 Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer Google Cloud environment
-## How to prepare your Google Cloud Shell environment (only needed once per Google Account):
+## How to prepare your Google Cloud Shell environment (only needed once per Google Account)
 ### Run these commands inside the Google Cloud Shell browser window
 	git clone git@github.com:stefanbaur/google-cloud-x2go-server.git
 	test -d gopath && mv gopath gopath_old
@@ -12,7 +12,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 	export USERNAME=demouser
 	export USERREALNAME="John Doe"
 *Note: Feel free to change the values of <code>SERVERNAME</code>, <code>USERNAME</code>, and <code>USERREALNAME</code>, but remember that setting any of the username or servername values to a name usually associated with you will mean you are no longer anonymous.*
-## How to set up and run the server:
+## How to set up and run the server
 1. Run this command inside the Google Cloud Shell browser window every time your instance was offline (or if you ran <code>destroyserver</code> before):<code>createserver</code>
 2. To actually start the server, run <code>startserver-tor</code> inside the Google Cloud Shell browser window
 (Note: <code>startserver-reversetunnel</code> is no longer actively tested or maintained, but still provided in case you prefer it over using Tor)
@@ -20,7 +20,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 ## How to prepare the client (only needed once per client)
 ### Install required packages
 	sudo apt install tor netcat x2goclient
-### Edit ~/.ssh/config:
+### Edit ~/.ssh/config
 	Host X2GoTorBox
 		Hostname YourOnionAddressGoesHere.onion
 		ProxyCommand nc -X 5 -x 127.0.0.1:9050 %h %p</code>
