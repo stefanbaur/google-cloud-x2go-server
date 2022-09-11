@@ -64,7 +64,12 @@ echo 'keyboard-configuration  keyboard-configuration/layout   select  German' | 
 echo 'locales locales/default_environment_locale      select  C.UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
 echo 'locales locales/locales_to_be_generated multiselect     de_DE.UTF-8 UTF-8, en_US.UTF-8 UTF-8' | sudo chroot $SERVERNAME debconf-set-selections
 
-# now let's install locales first, to make the STDERR messages about missing locale configuration stop
+# first, we need to install ca-certificates, so apt won't complain about untrusted certs
+sudo chroot $SERVERNAME apt install ca-certificates -d -y # fetch
+sudo chroot $SERVERNAME apt install ca-certificates -y # install
+sudo chroot $SERVERNAME apt clean # this should be a no-op with apt (apt-get needed it), but it won't hurt
+
+# now let's install locales, to make the STDERR messages about missing locale configuration stop
 sudo chroot $SERVERNAME apt install locales -d -y # fetch
 sudo chroot $SERVERNAME apt install locales -y # install
 sudo chroot $SERVERNAME apt clean # this should be a no-op with apt (apt-get needed it), but it won't hurt
