@@ -15,7 +15,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 1. Run this command inside the Google Cloud Shell browser window every time your instance was offline (or if you ran <code>destroyserver</code> before):<code>createserver</code>
 2. To actually start the server, run <code>startserver-tor</code> inside the Google Cloud Shell browser window
 (Note: <code>startserver-reversetunnel</code> is no longer actively tested or maintained, but still provided in case you prefer it over using Tor)
-4. Load the QR code into an authenticator app of your choice
+4. Load the QR code into an authenticator app of your choice *(Note: the QR code will remain the same unless the home directory gets deleted)* and copy the emergency codes to a safe location
 ## How to prepare the client (only needed once per client)
 ### Install required packages
 	sudo apt install tor netcat x2goclient
