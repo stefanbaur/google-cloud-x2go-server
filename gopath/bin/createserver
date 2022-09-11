@@ -53,7 +53,7 @@ if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace bullseye with buster if re
 fi
 
 # we need to downgrade from https to http for a moment
-sudo sed -e 's/https/http/g' -i $SERVERNAME/etc/apt/sources.list.old $SERVERNAME/etc/apt/sources.list
+sudo sed -e 's/https/http/g' -i.old $SERVERNAME/etc/apt/sources.list
 
 # now let's make the new sources.list known to apt and pull in repo data
 sudo chroot $SERVERNAME apt update 
