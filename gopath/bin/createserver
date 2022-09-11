@@ -190,13 +190,13 @@ sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 1
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
 
 # make sure window compositing in XFCE4 is disabled globally
-echo '<?xml version="1.0" encoding="UTF-8"?>' | sudo tee $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '<channel name="xfwm4" version="1.0">' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '        <property name="general" type="empty">' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '	                <property name="use_compositing" type="bool" value="false"/>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '			        </property>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
-echo '				</channel>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/deV/null
+echo '<?xml version="1.0" encoding="UTF-8"?>' | sudo tee $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '<channel name="xfwm4" version="1.0">' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '        <property name="general" type="empty">' | sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '	                <property name="use_compositing" type="bool" value="false"/>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '			        </property>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
+echo '				</channel>'| sudo tee -a $SERVERNAME/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml >/dev/null
 
 # we're basically done, so let's back up our configuration into the persistent directory
 sudo cp -a $SERVERNAME/etc/ssh/*_key* $HOMEDIR_ROOT/etc/ssh/
