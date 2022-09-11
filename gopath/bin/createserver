@@ -105,8 +105,8 @@ if [ "$CHROOTDEBVERSION" = "buster" ]; then
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_10/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 else
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 fi
 
 # now update the sources.list info again
