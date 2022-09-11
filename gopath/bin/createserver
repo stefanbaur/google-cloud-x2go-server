@@ -47,9 +47,9 @@ sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home # here goes our homedir bind mo
 sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no one can mess with it before we're done
 
 # prepare a sources.list for us, based on the one present in our host environment
-awk ' $0 ~ /stretch/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
-if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace stretch with buster if requested
-	sudo sed -e 's/stretch/buster/g' -i $SERVERNAME/etc/apt/sources.list
+awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep -v docker | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace bullseye with buster if requested
+	sudo sed -e 's/bullseye/buster/g' -i $SERVERNAME/etc/apt/sources.list
 fi
 
 sudo chroot $SERVERNAME apt update # now let's make the new sources.list known to apt and pull in repo data
@@ -80,23 +80,18 @@ sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice 
 sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim x2goclient xfce4 xfce4-terminal -y
 sudo chroot $SERVERNAME apt clean
 
-# for stretch, we'll pull in x2goserver from backports, while buster has x2goserver in the standard repository
-if [ "$CHROOTDEBVERSION" = "buster" ]; then
-	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
-	sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
-else
-	sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -d -y
-	sudo chroot $SERVERNAME apt install -t stretch-backports x2goserver x2goserver-xsession -y
-fi
+# now let's install x2goserver
+sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
+sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
 sudo chroot $SERVERNAME apt clean
 
-# add the key for the appropriate Pale Moon repo for stretch or buster, and add the repo too
+# add the key for the appropriate Pale Moon repo for bullseye or buster, and add the repo too
 if [ "$CHROOTDEBVERSION" = "buster" ]; then
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_10/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 else
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_9.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_9.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11.0/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11.0/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 fi
 
 # now update the sources.list info again
