@@ -20,6 +20,11 @@ if sudo chroot $SERVERNAME ps -C gpg-agent ; then
 	sudo chroot $SERVERNAME killall -u $USERNAME -w gpg-agent
 fi
 
+# if xiccd is still running in the changeroot (it may get spawned by a desktop environment), stop it
+if sudo chroot $SERVERNAME ps -C xiccd ; then
+	sudo chroot $SERVERNAME killall -u $USERNAME -w xiccd
+fi
+
 #  back up our configuration into the persistent directory
 sudo mkdir -p $HOMEDIR_ROOT/etc/ssh/ $HOMEDIR_ROOT/root/.ssh/ $HOMEDIR_ROOT/var/lib/tor/hidden_services/SSH_server
 sudo cp -a $SERVERNAME/etc/shadow $HOMEDIR_ROOT/etc/
