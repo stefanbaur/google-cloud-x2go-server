@@ -187,6 +187,17 @@ sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2
 # final configuration for our SSH daemon inside the changeroot - make it listen on port 222 as 22 is already in use on the host, and force it to bind to 127.0.0.1 only, as we'll only connect via TOR/reverse SSH Tunnel
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
 
+if [ "$X2GOHTML5" = "true" ]; then
+	echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras heuler" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/heuler.list >/dev/null
+	sudo chroot $SERVERNAME apt-key adv --recv-keys --keyserver keyserver.ubuntu.com E1F958385BFE2B6E
+	sudo chroot $SERVERNAME apt update
+	sudo chroot $SERVERNAME apt install -y ssl-cert nginx fcgiwrap x2gohtmlclient x2goserver x2goserver-xsession x2goserver-x2gokdrive
+	sudo sed -e 's/:80/:8081/' -e 's/:443/:8080/' -e 's/:8080 ssl/:8080/' -e '/ipv6only/d' -i $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf 
+	sudo ln -s $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf ../sites-enabled/x2gohtmlclient-demo.conf
+	sudo rm $SERVERNAME/etc/nginx/sites-enabled/default
+	sudo chroot $SERVERNAME service nginx stop || true
+fi
+
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
 
 # make sure window compositing in XFCE4 is disabled globally
