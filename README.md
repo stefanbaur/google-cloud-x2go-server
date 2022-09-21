@@ -2,7 +2,7 @@
 Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer Google Cloud environment
 ## How to prepare your Google Cloud Shell environment (only needed once per Google Account)
 ### Run these commands inside the Google Cloud Shell browser window
-	git clone git@github.com:stefanbaur/google-cloud-x2go-server.git
+	git clone https://github.com/stefanbaur/google-cloud-x2go-server.git
 	test -d gopath && mv gopath gopath_old
 	ln -s google-cloud-x2go-server/gopath gopath
 ### Edit the file ~/.gcs-x2go (again, inside the Google Cloud Shell browser window)
