@@ -1,0 +1,10 @@
+#!/bin/bash
+. ~/gopath/bin/startserver-main # source the main script
+
+sudo chroot $SERVERNAME service tor stop # make sure tor is stopped in the changeroot
+
+echo "Enabling Password-Based Logins"
+echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
+
+sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
+sudo chroot $SERVERNAME service nginx start # start the Webserver daemon in the changeroot
