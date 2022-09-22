@@ -2,6 +2,17 @@
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 
+function serve_keyfile {
+	# share ssh directory via local python webserver (to enable key download)
+	if [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_${SERVERNAME///} ]; then
+		echo "Starting local webserver for Keyfile download (use CloudShell Preview to access it) ..."
+		(
+			cd $HOMEDIR_ROOT/$USERNAME/.ssh/
+			python3 -m http.server --bind 127.0.0.1 8080 >/dev/null 2>&1
+		) &
+	fi
+}
+
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
 
 export HOMEDIR_ROOT=~/$SERVERNAME-home
@@ -61,12 +72,3 @@ sudo cp -a $HOMEDIR_ROOT/var/lib/tor/hidden_services $SERVERNAME/var/lib/tor/
 sudo chroot $SERVERNAME chown -R debian-tor: /var/lib/tor/hidden_services # this directory and its contents need to be owned by this particular user
 
 sudo chroot $SERVERNAME service ssh start # start ssh server, as we need SSHd both for TOR and for the reverse SSH tunnel
-
-# share ssh directory via local python webserver (to enable key download)
-if [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_${SERVERNAME///} ]; then
-	echo "Starting local webserver for Keyfile download (use CloudShell Preview to access it) ..."
-	(
-		cd $HOMEDIR_ROOT/$USERNAME/.ssh/
-		python3 -m http.server --bind 127.0.0.1 8080 >/dev/null 2>&1
-	) &
-fi

@@ -1,3 +1,4 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main # source the main script
+serve_keyfile
 sudo chroot $SERVERNAME ssh -R2345:127.0.0.1:222 -p $REMOTEPORT -l $REMOTEUSER $REMOTESERVER # start the reverse tunnel

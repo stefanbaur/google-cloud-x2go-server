@@ -38,6 +38,8 @@ else
 	echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
 fi
 
+serve_keyfile
+
 sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
 sudo chroot $SERVERNAME service tor start # start the TOR daemon in the changeroot
 
