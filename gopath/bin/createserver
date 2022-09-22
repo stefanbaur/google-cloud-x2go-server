@@ -193,7 +193,7 @@ if [ "$X2GOHTML5" = "true" ]; then
 	sudo chroot $SERVERNAME apt update
 	sudo chroot $SERVERNAME apt install -y ssl-cert nginx fcgiwrap x2gohtmlclient x2goserver x2goserver-xsession x2goserver-x2gokdrive
 	sudo sed -e 's/:80/:8081/' -e 's/:443/:8080/' -e 's/:8080 ssl/:8080/' -e '/ipv6only/d' -i $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf 
-	sudo ln -s $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf ../sites-enabled/x2gohtmlclient-demo.conf
+	sudo ln -s /etc/nginx/sites-available/x2gohtmlclient-demo.conf $SERVERNAME/etc/nginx/sites-enabled/
 	sudo sed -e 's/name="server" /name="server" value="127.0.0.1:222" /' -e 's/name="uname" /name="uname" value="'$USERNAME'"/' -i $SERVERNAME/usr/share/x2gohtmlclient/demo/index.html
 	sudo rm $SERVERNAME/etc/nginx/sites-enabled/default
 	sudo chroot $SERVERNAME service nginx stop || true
