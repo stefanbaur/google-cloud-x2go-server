@@ -1,6 +1,6 @@
 #!/bin/bash -e
 cd ~ # just to play it safe, we'll chdir to our own homedir
-. ~/gopath/bin/startserver-main # source the main script
+. ~/.gcs-x2go # now let's source the config file
 
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
 
