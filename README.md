@@ -59,6 +59,6 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 4. To manually purge the server, run <code>destroyserver</code> after it has been stopped with <code>stopserver</code>.
 5. Stop the Tor service on your **Client** if you don't intend to keep it running. To stop it, run: <code>sudo service tor stop</code> on your local machine.
 
-##Freezing and Thawing a server image
+## Freezing and Thawing a server image
 You can now "freeze" a server image using the "freezeserver" command. It will shut down the server, then create a $SERVERNAME.tar.xz tarball in ~/$SERVERNAME-home/.
 That way, packages you installed inside your changeroot will survive a shutdown. Note that a base installed server (taking up about 3.4GB uncompressed) will be compressed down to roughly 880MB, but this process takes about 30 Minutes in which you need to stay connected to the cloud shell (i.e. you're "wasting" 30 minutes of your time contingent). A fresh install using "createserver", where only your home directory is preserved, takes only about 10-12 minutes. "Thawing" a previously frozen server takes only about two minutes, though. So with a more complex installation, freezing and thawing might be the better choice; for a run-off-the-mill server with out any extra packages, creating it each time you need it will be faster overall.
