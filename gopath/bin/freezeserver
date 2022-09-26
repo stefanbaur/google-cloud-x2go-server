@@ -1,0 +1,31 @@
+#!/bin/bash -e
+cd ~ # just to play it safe, we'll chdir to our own homedir
+. ~/gopath/bin/startserver-main # source the main script
+
+[ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
+
+if [ "$SERVER_USE_ROOT" = "true" ] ; then # prepend / if server changeroot is in root directory
+	export SERVERNAME="/$SERVERNAME"
+fi
+
+if [ -f $SERVERNAME-home/$SERVERNAME.tar.xz ]; then
+	echo "A file '$SERVERNAME-home/$SERVERNAME.tar.xz' already exists. Aborting."
+	exit 1
+fi
+
+sudo apt install pixz -y
+
+echo "Stopping server ..."
+stopserver && echo "... stopped."
+echo "Freezing server ..."
+if (sudo tar -I"pixz -e -9" -cvf $SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME && sudo rm -rf $SERVERNAME); then
+	echo "... frozen as '$SERVERNAME-home/$SERVERNAME.tar.xz'."
+else
+	echo "An error occurred. Attempting to delete broken archive ..."
+	if sudo rm $SERVERNAME-home/$SERVERNAME.tar.xz; then
+		echo "... deleted."
+	else
+		echo "... unable to delete '$SERVERNAME-home/$SERVERNAME.tar.xz'. Please fix this manually."
+		exit 1
+	fi
+fi

@@ -1,0 +1,42 @@
+#!/bin/bash -e
+cd ~ # just to play it safe, we'll chdir to our own homedir
+. ~/gopath/bin/startserver-main # source the main script
+
+[ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
+
+if [ "$SERVER_USE_ROOT" = "true" ] ; then # prepend / if server changeroot is in root directory
+	export SERVERNAME="/$SERVERNAME"
+fi
+
+if [ -d $SERVERNAME ]; then
+	echo "A directory '$SERVERNAME' already exists. Aborting."
+	exit 1
+fi
+
+if ! [ -f $SERVERNAME-home/$SERVERNAME.tar.xz ]; then
+	echo "The file '$SERVERNAME-home/$SERVERNAME.tar.xz' could not be found. Aborting."
+	exit 1
+fi
+
+sudo apt install pixz -y
+
+echo "Thawing server ..."
+if (sudo tar -I"pixz" -xvf $SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME); then
+	echo "... thawed '$SERVERNAME-home/$SERVERNAME.tar.xz'."
+	if (sudo sudo rm -rf $SERVERNAME-home/$SERVERNAME.tar.xz); then
+		echo "Removed '$SERVERNAME-home/$SERVERNAME.tar.xz'"
+	else
+		echo "Error removing '$SERVERNAME-home/$SERVERNAME.tar.xz'"
+		exit 1
+	fi
+else
+	echo "An error occurred. Please fix this manually."
+	exit 1
+fi
+echo "Updating package list inside thawed server ..."
+sudo chroot $SERVERNAME apt update
+if [ $(sudo chroot $SERVERNAME apt list --upgradable|wc -l) -gt 1]; then 
+	echo "It looks like there are Upgrades available for your thawed server."
+	echo "Please check if you need to run 'sudo apt upgrade' inside the thawed server."
+fi
+echo "Next: Run one of the startserver commands. (Use startserver-<tab> to see available options.)"
