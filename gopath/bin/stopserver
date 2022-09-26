@@ -12,6 +12,7 @@ export HOMEDIR_ROOT=~/$SERVERNAME-home
 # stop services running in the chroot
 sudo chroot $SERVERNAME service tor stop
 sudo chroot $SERVERNAME service ssh stop
+sudo chroot $SERVERNAME service nginx stop
 
 # sudo chroot $SERVERNAME killall -u $USERNAME -w 
 
