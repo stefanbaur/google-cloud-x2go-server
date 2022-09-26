@@ -35,7 +35,7 @@ else
 fi
 echo "Updating package list inside thawed server ..."
 sudo chroot $SERVERNAME apt update
-if [ $(sudo chroot $SERVERNAME apt list --upgradable|wc -l) -gt 1]; then 
+if [ $(sudo chroot $SERVERNAME apt list --upgradable|wc -l) -gt 1 ]; then 
 	echo "It looks like there are Upgrades available for your thawed server."
 	echo "Please check if you need to run 'sudo apt upgrade' inside the thawed server."
 fi
