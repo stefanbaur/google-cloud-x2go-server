@@ -13,20 +13,20 @@ if [ -d $SERVERNAME ]; then
 	exit 1
 fi
 
-if ! [ -f $SERVERNAME-home/$SERVERNAME.tar.xz ]; then
-	echo "The file '$SERVERNAME-home/$SERVERNAME.tar.xz' could not be found. Aborting."
+if ! [ -f $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz ]; then
+	echo "The file '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz' could not be found. Aborting."
 	exit 1
 fi
 
 sudo apt install pixz -y
 
 echo "Thawing server ..."
-if (sudo tar -I"pixz" -xvf $SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME); then
-	echo "... thawed '$SERVERNAME-home/$SERVERNAME.tar.xz'."
-	if (sudo sudo rm -rf $SERVERNAME-home/$SERVERNAME.tar.xz); then
-		echo "Removed '$SERVERNAME-home/$SERVERNAME.tar.xz'"
+if (sudo tar -I"pixz" -xvf $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME); then
+	echo "... thawed '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz'."
+	if (sudo sudo rm $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz); then
+		echo "Removed '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz'"
 	else
-		echo "Error removing '$SERVERNAME-home/$SERVERNAME.tar.xz'"
+		echo "Error removing '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz'"
 		exit 1
 	fi
 else
