@@ -11,6 +11,7 @@ fi
 # stop services running in the chroot
 sudo chroot $SERVERNAME service tor stop
 sudo chroot $SERVERNAME service ssh stop
+sudo chroot $SERVERNAME service nginx stop
 
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
 
