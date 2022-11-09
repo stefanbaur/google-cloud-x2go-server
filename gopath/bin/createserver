@@ -198,10 +198,16 @@ if [ "$X2GOHTML5" = "true" ]; then
 	sudo chroot $SERVERNAME apt clean
 	sudo sed -e 's/:80/:8081/' -e 's/:443/:8080/' -e 's/:8080 ssl/:8080/' -e '/ipv6only/d' -i $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf 
 	sudo ln -s /etc/nginx/sites-available/x2gohtmlclient-demo.conf $SERVERNAME/etc/nginx/sites-enabled/
-	sudo sed -e 's/name="server" /name="server" value="127.0.0.1:222" /' -e 's/name="uname" /name="uname" value="'$USERNAME'"/' -i $SERVERNAME/usr/share/x2gohtmlclient/demo/index.html
+	sudo sed -e 's/name="server" /name="server" value="127.0.0.1" /' -e 's/name="uname" /name="uname" value="'$USERNAME'"/' -i $SERVERNAME/usr/share/x2gohtmlclient/demo/index.html
+	sudo sed -e "s/,  '-l', /, '-p 222', '-l', /" -i $SERVERNAME/usr/lib/cgi-bin/x2gorpc.cgi
 	sudo rm $SERVERNAME/etc/nginx/sites-enabled/default
 	sudo chroot $SERVERNAME update-rc.d nginx remove
 	sudo chroot $SERVERNAME service nginx stop || true
+	# this needs to be added to the torrc file
+	echo '# Hidden Service Web_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # header
+	echo 'HiddenServiceDir /var/lib/tor/hidden_services/Web_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # directory where the service config is created/stored
+	echo 'HiddenServicePort 8080' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # note that you need to disable the python web server before being able to start nginx
+	echo 'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null 
 fi
 
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
