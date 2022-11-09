@@ -9,3 +9,11 @@ echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes" | sudo
 sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
 sudo chroot $SERVERNAME service nginx start # start the Webserver daemon in the changeroot
 sudo chroot $SERVERNAME service tor start # make sure tor is started in the changeroot
+
+toraddress=$(sudo cat $SERVERNAME/var/lib/tor/hidden_services/Web_server/hostname) # determine our TOR address
+
+# print message containing next step and the TOR address, as well as the mnemonic version
+echo "You can now try to connect using the tor browser pointed at 'http://$toraddress:8080'."
+echo "To spell the TOR address out over the phone, use the following mnemonics:"
+spellout-tor $toraddress
+echo "The command 'reassemble-tor' can be used to turn this list of names back into a TOR address."
