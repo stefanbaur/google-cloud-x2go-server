@@ -207,7 +207,6 @@ if [ "$X2GOHTML5" = "true" ]; then
 	echo '# Hidden Service Web_Server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # header
 	echo 'HiddenServiceDir /var/lib/tor/hidden_services/Web_server' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # directory where the service config is created/stored
 	echo 'HiddenServicePort 8080' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null # note that you need to disable the python web server before being able to start nginx
-	echo 'HiddenServiceSingleHopMode 1' | sudo tee -a $SERVERNAME/etc/tor/torrc >/dev/null 
 fi
 
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
