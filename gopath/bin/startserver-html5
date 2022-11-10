@@ -7,6 +7,7 @@ echo "Enabling Password-Based Logins"
 echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
 
 sudo chroot $SERVERNAME service ssh restart # restart the SSH daemon in the changeroot
+sudo chroot $SERVERNAME service fcgiwrap start # start the Fast CGI Wrapper daemon in the changeroot
 sudo chroot $SERVERNAME service nginx start # start the Webserver daemon in the changeroot
 sudo chroot $SERVERNAME service tor start # make sure tor is started in the changeroot
 
