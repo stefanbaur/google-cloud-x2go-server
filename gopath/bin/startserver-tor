@@ -35,7 +35,7 @@ if [ -n "$SAFETOENABLEPW" ]; then
 	echo -e "PasswordAuthentication no\nChallengeResponseAuthentication no" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
 else
 	echo "Enabling Password/Token 2FA."
-	sudo chroot $SERVERNAME -i -e '/^KbdInteractiveAuthentication/d' /etc/ssh/sshd_config
+	sudo chroot $SERVERNAME sed -i -e '/^KbdInteractiveAuthentication/d' /etc/ssh/sshd_config
 	echo -e "PasswordAuthentication yes\nChallengeResponseAuthentication yes\nKbdInteractiveAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
 fi
 
