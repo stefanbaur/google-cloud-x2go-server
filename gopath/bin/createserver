@@ -48,8 +48,8 @@ sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no 
 
 # prepare a sources.list for us, based on the one present in our host environment
 awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep 'debian\.org' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
-if [ "$CHROOTDEBVERSION" = "buster" ]; then # replace bullseye with buster if requested
-	sudo sed -e 's/bullseye/buster/g' -i $SERVERNAME/etc/apt/sources.list
+if [ "$CHROOTDEBVERSION" = "bookworm" ]; then # replace bullseye with bookworm if requested
+	sudo sed -e 's/bullseye/bookworm/g' -i $SERVERNAME/etc/apt/sources.list
 fi
 
 # we need to downgrade from https to http for a moment
@@ -100,10 +100,10 @@ sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
 sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
 sudo chroot $SERVERNAME apt clean
 
-# add the key for the appropriate Pale Moon repo for bullseye or buster, and add the repo too
-if [ "$CHROOTDEBVERSION" = "buster" ]; then
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_10/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_10/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
+# add the key for the appropriate Pale Moon repo for bullseye or bookworm, and add the repo too
+if [ "$CHROOTDEBVERSION" = "bookworm" ]; then
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_12/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_12/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 else
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11/Release.key -O - | gpg --dearmor | sudo tee $SERVERNAME/etc/apt/trusted.gpg.d/home_stevenpusser.gpg > /dev/null
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
@@ -186,7 +186,6 @@ sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2
 
 # final configuration for our SSH daemon inside the changeroot - make it listen on port 222 as 22 is already in use on the host, and force it to bind to 127.0.0.1 only, as we'll only connect via TOR/reverse SSH Tunnel
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
-
 if [ "$X2GOHTML5" = "true" ]; then
 	echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras heuler" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/heuler.list >/dev/null
 	sudo chroot $SERVERNAME apt-key adv --recv-keys --keyserver keyserver.ubuntu.com E1F958385BFE2B6E
