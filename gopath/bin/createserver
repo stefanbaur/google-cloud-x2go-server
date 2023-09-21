@@ -119,7 +119,7 @@ if [ -n "$USEX2GOREPO" ]; then
 	sudo wget -O $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key-old.asc https://packages.x2go.org/debian-old-pub.key
 	sudo chroot $SERVERNAME apt update
 	# now apt should recognize our key, and we can use our own repo to install the keyring file.
-	if sudo chroot $SERVERNAME apt install x2go-keyring then
+	if sudo chroot $SERVERNAME apt install x2go-keyring ; then
 		# once that's done, let's remove our temporary solution
 		sudo rm $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc
 	else
