@@ -115,14 +115,14 @@ if [ -n "$USEX2GOREPO" ]; then
 		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
 	fi
 	# Since apt-key is deprecated, we avoid the chicken-and-egg problem of downloading unsecured files by using an https download for our key
-	sudo wget -O /etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
-	sudo apt update
+	sudo wget -O $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
+	sudo chroot $SERVERNAME apt update
 	# now apt should recognize our key, and we can use our own repo to install the keyring file.
-	sudo apt install x2go-keyring
+	sudo chroot $SERVERNAME apt install x2go-keyring
 	# once that's done, let's remove our temporary solution
-	sudo rm /etc/apt/trusted.gpg.d/x2go-signing-key.asc
+	sudo rm $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc
 	# and run apt-update again
-	sudo apt update
+	sudo chroot $SERVERNAME apt update
 fi
 # now let's install x2goserver and x2goclient 
 sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession x2goclient -d -y
