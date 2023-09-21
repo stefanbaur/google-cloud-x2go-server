@@ -115,7 +115,39 @@ if [ -n "$USEX2GOREPO" ]; then
 		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
 	fi
 	# Since apt-key is deprecated, we avoid the chicken-and-egg problem of downloading unsecured files by using an https download for our key
-	sudo wget -O $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
+	# sudo wget -O $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
+	# Whoops, seems that file doesn't contain the key we're looking for. So let's try embedding the proper one right here:
+	sudo tee $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc >/dev/null <<X2GOSIGNINGKEY
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBE15RZ4BCADGlna23kyfn96REJA7A+md74rAAsdvq3a2U1M9ghlta+6yOPGi
+XTSHykAYaJXrYXM8PlbVsb+ub4VyDpQHbr7U1L0hicSPd+h14yXLm5T+PyZpKvLV
+5OWP0dU4LkOvDIWN/EyMnUd6eHQrDo2FW8dPsJ95Pq6Ido264wHMz1LhnjOAb8s7
+qB8cn8t/+8lg28f6R+BcE926WJyEyZ/akvvo09MliNCshZyyW8/l76nSLGF/GzqY
+B0bNJi7LjMuOyrN+yhKhGXvmfXx5bwRXwBlWHxYfe3KWuTD/6KtHCjTgkEQMaBi3
+rRM8gEiVcr0oNNAu9F7XhVtaIhE9YleyKpapABEBAAG0LlgyZ28gRGViaWFuL1Vi
+dW50dSBQYWNrYWdpbmcgPGRlYmlhbkB4MmdvLm9yZz6JATgEEwECACIFAk15RZ4C
+GwMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEOH5WDhb/ituqHMH/jORk1Da
+g6WPTzCwitrrYBetrjIOK/tudtjo6tJwtkIkRwjMQOmaJt95wTMqn52KiNm6NNyJ
+GRchuQBDn9roDRH8D19DT1J/DlVsckeWgP25IcEqLb3WC4BZspEGI8K3hfk9K0nM
+BLviWvoSmOxSPdD4ALpKt+q/URyUcfMlkEeiRRzQ6gb6iB0yRjWf4v0s7PbAH9J7
+XRRO/wBpBesLYJ5cKlD6WGIwDN1h9Qkc3QVg7OcmDPwc9s1CKu+JZ2MLutNAWH3a
+whXdzNkg+4wycA6lVsInH7t3brxpX83SqMeYPQp789G63HULcYaJ/NqbHjF5AhG3
+12NVv94774ZsPC25AQ0ETXlFngEIAM2uI+UFCU4upRqh5ek6cLvLvO2Aq+mYAwD1
+yXE9YNdaOMxZJ+ADf82PjCRkXIegRdaeKbMzqeUVs3+2CDSOkjrAS/VubHcDrzD2
+/uDHH5FDjMFBSiVQ5J5yV4M2p8Bm/9eyZxy5z53dzQSYwLVuk2OYK1fSdyYtCM9a
+nBJKZ/61gmObrJO+tt3wM/1ac465YSBpMB/IjiGZ97UIrUIHF7Ql7hpKCoELtwzr
+uk0D5/YWka6AunAHRiww/FFgUVLIJxkBIxd4bkP+5EzHknLDDl5c29rf79nBNVFU
+NMnHNVvvuy5Z1raLdv7a9Ni2bgGIQ4wTusmPizVkdHnmgad/EzkAEQEAAYkBHwQY
+AQIACQUCTXlFngIbDAAKCRDh+Vg4W/4rbnf1B/wPz2G2BWDn1HNsR43l6n9itsNi
+g5TcDEfh8hrWAP0/mwAMYgRD08ey+S5PkfAStatE2pml91F0JfoyhJvbXHk1iusM
+9n0EoZly7J5fDvaQ3eYtzmrjV57WY3yPgX2ecZX4TPLdC3mUBfdwFMBSXqLCYh5Q
+QQ3cnEsrtIWyXY2PWI0XUJJqPfEquxQt06fbO6J02lADPPPkCSidsGlzV4C3MU/Q
+G8PMTiwerM1GroD7EWfyxkuCnbET4oznnHkmr7XJnTU0BCDg8SfZvyxoSOY+K1CN
+pphT6bAWkXkcftdZB6oJ+HeCTbdWR8nP64Z57lAr1uLfGgnImSzT/4N6/IeM
+=Y+lY
+-----END PGP PUBLIC KEY BLOCK-----
+X2GOSIGNINGKEY
 	sudo chroot $SERVERNAME apt update
 	# now apt should recognize our key, and we can use our own repo to install the keyring file.
 	sudo chroot $SERVERNAME apt install x2go-keyring
