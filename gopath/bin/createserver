@@ -95,6 +95,12 @@ sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice 
 sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -y
 sudo chroot $SERVERNAME apt clean
 
+# To install X2Go's HTML5 client, we currently need to use the heuler (nightly) repository
+if [ "$X2GOHTML5" = "true" ] && [ -z "$USEX2GOREPO" ]; then
+	export USEX2GOREPO = heuler
+	echo "WARNING: X2GOHTML5 set to true, but no X2Go repository was specified. Using X2Go's (not Debian's) heuler (nightly) repository."
+	echo "WARNING: Explicitly set USEX2GOREPO in .gcs-x2go to get rid of this warning."
+fi
 # check if we are supposed to use X2Go packages from an external X2Go repository, rather than from the official Debian repository
 if [ -n "$USEX2GOREPO" ]; then
 	if [ "$USEX2GOREPO" = "stable" ]; then
@@ -209,13 +215,9 @@ sudo chroot $SERVERNAME ln -sf /proc/mounts /etc/mtab # without an mtab file, X2
 
 # final configuration for our SSH daemon inside the changeroot - make it listen on port 222 as 22 is already in use on the host, and force it to bind to 127.0.0.1 only, as we'll only connect via TOR/reverse SSH Tunnel
 sudo sed -i -e 's/^#Port.*$/Port 222/g' -e 's/^#ListenAddress.*$/ListenAddress 127.0.0.1/' $SERVERNAME/etc/ssh/sshd_config
+
+# This is the step where we start installing X2Go's HTML5 client packages, if requested by the user
 if [ "$X2GOHTML5" = "true" ]; then
-	echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras heuler" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/heuler.list >/dev/null
-	sudo chroot $SERVERNAME apt-key adv --recv-keys --keyserver keyserver.ubuntu.com E1F958385BFE2B6E
-	sudo chroot $SERVERNAME apt update
-	sudo chroot $SERVERNAME apt dist-upgrade -d -y
-	sudo chroot $SERVERNAME apt upgrade -y
-	sudo chroot $SERVERNAME apt dist-upgrade -y
 	sudo chroot $SERVERNAME apt install -y ssl-cert nginx spawn-fcgi fcgiwrap x2gohtmlclient x2goserver x2goserver-xsession x2goserver-x2gokdrive
 	sudo chroot $SERVERNAME apt clean
 	sudo sed -e 's/:80/:8081/' -e 's/:443/:8080/' -e 's/:8080 ssl/:8080/' -e '/ipv6only/d' -i $SERVERNAME/etc/nginx/sites-available/x2gohtmlclient-demo.conf 
