@@ -104,15 +104,15 @@ fi
 # check if we are supposed to use X2Go packages from an external X2Go repository, rather than from the official Debian repository
 if [ -n "$USEX2GOREPO" ]; then
 	if [ "$USEX2GOREPO" = "stable" ]; then
-		echo '# X2Go Repository (release builds)' | sudo tee /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo '# X2Go Repository (sources of release builds)' | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
+		echo '# X2Go Repository (release builds)' | sudo tee $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo '# X2Go Repository (sources of release builds)' | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
 	else
-		echo "# X2Go Repository ($USEX2GOREPO builds)" |sudo tee /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo "# X2Go Repository (sources of $USEX2GOREPO builds)" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
-		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a /etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "# X2Go Repository ($USEX2GOREPO builds)" |sudo tee $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "# X2Go Repository (sources of $USEX2GOREPO builds)" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
+		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" | sudo tee -a $SERVERNAME/etc/apt/sources.list.d/x2go.list >/dev/null
 	fi
 	# Since apt-key is deprecated, we avoid the chicken-and-egg problem of downloading unsecured files by using an https download for our key
 	sudo wget -O $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
