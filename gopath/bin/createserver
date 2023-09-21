@@ -91,13 +91,36 @@ sudo chroot $SERVERNAME apt dist-upgrade -y # install second batch
 sudo chroot $SERVERNAME apt clean 
 
 # and finally, let's install the packages needed for an average office desktop
-sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim x2goclient xfce4 xfce4-terminal -d -y
-sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim x2goclient xfce4 xfce4-terminal -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -d -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -y
 sudo chroot $SERVERNAME apt clean
 
-# now let's install x2goserver
-sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -d -y
-sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession -y
+# check if we are supposed to use X2Go packages from an external X2Go repository, rather than from the official Debian repository
+if [ -n "$USEX2GOREPO" ]; then
+	if [ "$USEX2GOREPO" = "stable" ]; then
+		echo '# X2Go Repository (release builds)' >/etc/apt/sources.list.d/x2go.list
+		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" >>/etc/apt/sources.list.d/x2go.list
+		echo '# X2Go Repository (sources of release builds)' >>/etc/apt/sources.list.d/x2go.list
+		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras main" >>/etc/apt/sources.list.d/x2go.list
+	else
+		echo "# X2Go Repository ($USEX2GOREPO builds)" >/etc/apt/sources.list.d/x2go.list
+		echo "deb http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" >>/etc/apt/sources.list.d/x2go.list
+		echo "# X2Go Repository (sources of $USEX2GOREPO builds)" >>/etc/apt/sources.list.d/x2go.list
+		echo "deb-src http://packages.x2go.org/debian $CHROOTDEBVERSION extras $USEX2GOREPO" >>/etc/apt/sources.list.d/x2go.list
+	fi
+	# Since apt-key is deprecated, we avoid the chicken-and-egg problem of downloading unsecured files by using an https download for our key
+	wget -O /etc/apt/trusted.gpg.d/x2go-signing-key.asc https://packages.x2go.org/pub.key
+	apt update
+	# now apt should recognize our key, and we can use our own repo to install the keyring file.
+	apt install x2go-keyring
+	# once that's done, let's remove our temporary solution
+	rm /etc/apt/trusted.gpg.d/x2go-signing-key.asc
+	# and run apt-update again
+	apt update
+fi
+# now let's install x2goserver and x2goclient 
+sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession x2goclient -d -y
+sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession x2goclient -y
 sudo chroot $SERVERNAME apt clean
 
 # add the key for the appropriate Pale Moon repo for bullseye or bookworm, and add the repo too
