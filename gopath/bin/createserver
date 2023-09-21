@@ -49,7 +49,7 @@ sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no 
 # prepare a sources.list for us, based on the one present in our host environment
 awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep 'debian\.org' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
 if [ "$CHROOTDEBVERSION" = "bookworm" ]; then # replace bullseye with bookworm if requested
-	sudo sed -e 's/bullseye/bookworm/g' -i $SERVERNAME/etc/apt/sources.list
+	sudo sed -e 's/bullseye/bookworm/g' -e's/non-free/non-free non-free-firmware/' -i $SERVERNAME/etc/apt/sources.list
 fi
 
 # we need to downgrade from https to http for a moment
