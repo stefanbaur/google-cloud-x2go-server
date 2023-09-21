@@ -6,7 +6,7 @@ sudo chroot $SERVERNAME sed -i -e '/^PubkeyAuthentication/d' /etc/ssh/sshd_confi
 echo -e "PubkeyAuthentication yes" | sudo chroot $SERVERNAME tee -a /etc/ssh/sshd_config >/dev/null
 
 # install google 2FA
-sudo chroot $SERVERNAME apt install libpam-google-authenticator libqrencode4 qrencode
+sudo chroot $SERVERNAME apt install libpam-google-authenticator libqrencode4 qrencode -y
 
 # enable it if not already done
 sudo chroot $SERVERNAME grep -q pam_google_authenticator.so /etc/pam.d/sshd || \
