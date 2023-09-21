@@ -11,6 +11,10 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 	export CHROOTDEBVERSION="bullseye"
 	export USERNAME=demouser
 	export USERREALNAME="John Doe"
+	# optional - allowed values are "stable", "heuler" (nightly builds), and "saimaa" (ESR)
+	export USEX2GOREPO="stable"
+	# experimental - setting this to true will force USEX2GOREPO to "heuler"
+	export X2GOHTML5=false
 *Note: Feel free to change the values of <code>SERVERNAME</code>, <code>USERNAME</code>, and <code>USERREALNAME</code>, but remember that setting any of the username or servername values to a name usually associated with you will mean you are no longer anonymous.*
 ## How to set up and run the server
 1. Run this command inside the Google Cloud Shell browser window every time your instance was offline (or if you ran <code>destroyserver</code> before):<code>createserver</code>
@@ -39,7 +43,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 12. Check the "Same login as on X2GoServer" box
 13. Check the "Same password as on X2GoServer" box 
 14. Check "SSH Agent or default SSH key" if you're using an SSH key
-15. Select "XFCE4" or "Published Applications" as session type
+15. Select "XFCE4" or "Published Applications" as session type - if the command <code>dpkg -l x2gokdriveclient | grep "^ii"</code> does not return an empty result on your client, you can also try to check the "Run in X2GoKDrive" box right above this entry.
 16. Go to the "Media" Tab
 17. Un-Check "Enable Sound Support"
 18. Click "OK"
