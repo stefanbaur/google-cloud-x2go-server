@@ -8,7 +8,7 @@ Scripts to create, start, stop and destroy an X2Go server in the free-as-in-beer
 ### Edit the file ~/.gcs-x2go (again, inside the Google Cloud Shell browser window)
 	export SERVER_USE_ROOT=true
 	export SERVERNAME=demoserver
-	export CHROOTDEBVERSION="bullseye"
+	export CHROOTDEBVERSION="bookworm"
 	export USERNAME=demouser
 	export USERREALNAME="John Doe"
 	# optional - allowed values are "stable", "heuler" (nightly builds), and "saimaa" (ESR)
