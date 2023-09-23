@@ -50,21 +50,14 @@ Sadly, there is currently no macOS support for KDrive. Sponsors welcome! See [he
 1. Create a new session
 2. Start with the "Session" Tab
 3. Enter a Session name, like X2GoGoogleCloud
-4. Enter 127.0.0.1 as Host
+4. Enter X2GoTorBox as Host
 5. Enter the username you chose in .gcs-x2go
 6. Enter 222 as Port
 7. Check "Try auto login" if you're using an SSH key
-8. Check the "Use Proxy server for SSH connection" box *This is actually a workaround as X2GoClient seems to crash during the connection phase when using the X2GoTorBox alias or the Onion-Address directly*
-9. Select "SSH" as Proxy Type
-10. Enter "X2GoTorBox" as the Proxy Host name
-11. Enter 222 as Proxy Port
-12. Check the "Same login as on X2GoServer" box
-13. Check the "Same password as on X2GoServer" box 
-14. Check "SSH Agent or default SSH key" if you're using an SSH key
-15. Select "XFCE4" or "Published Applications" as session type - if you are running a KDrive-enabled client, you can also try to check the "Run in X2GoKDrive" box right above this entry when using a full desktop environment. Published applications don't work with KDrive (yet), single applications may or may not work. Once again, sponsors welcome! See [here](https://wiki.x2go.org/doku.php/doc:sponsors) for more info on sponsoring X2Go's development.
-16. Go to the "Media" Tab
-17. Un-Check "Enable Sound Support"
-18. Click "OK"
+8. Select "XFCE4" or "Published Applications" as session type - if you are running a KDrive-enabled client, you can also try to check the "Run in X2GoKDrive" box right above this entry when using a full desktop environment. Published applications don't work with KDrive (yet), single applications may or may not work. Once again, sponsors welcome! See [here](https://wiki.x2go.org/doku.php/doc:sponsors) for more info on sponsoring X2Go's development.
+9. Go to the "Media" Tab
+10. Un-Check "Enable Sound Support"
+11. Click "OK"
 ## How to start an X2Go Session
 1. Make sure the Server side is up and running: Run <code>startserver-tor</code> on the **Server** (i.e. inside your browser's cloud shell window) if you haven't done so already.
 2. Unless you have set it to start automatically, start the Tor service on the **Client** (i.e. on your local machine) by running <code>sudo service tor start</code> *Note: It may take a few minutes before the server becomes available via the Tor network*
