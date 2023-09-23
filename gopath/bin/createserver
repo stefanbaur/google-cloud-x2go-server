@@ -195,11 +195,11 @@ if ! [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_${SERVERNAME///} ]; then
 	sudo chroot ${SERVERNAME} sudo -u $USERNAME mkdir -p /home/$USERNAME/.ssh
 	sudo chroot ${SERVERNAME} sudo -u $USERNAME ssh-keygen -f /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}
 	sudo chroot ${SERVERNAME} cat /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}.pub | sudo chroot ${SERVERNAME} tee -a /home/${USERNAME}/.ssh/authorized_keys >/dev/null
+	sudo cp ${SERVERNAME}/home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///} ~/
 	sudo chroot ${SERVERNAME} chown -R ${USERNAME}: /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 700 /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 fi
-
 
 # now let's prepare the TOR hidden service
 sudo rm -rf $SERVERNAME/var/lib/tor/hidden_services # delete this if it already exists, so we have a clean state
