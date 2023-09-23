@@ -45,7 +45,7 @@ Sadly, there is currently no macOS support for KDrive. Sponsors welcome! See [he
 ### Edit ~/.ssh/config
 	Host X2GoTorBox
 		Hostname YourOnionAddressGoesHere.onion
-		ProxyCommand nc -X 5 -x 127.0.0.1:9050 %h %p</code>
+		ProxyCommand nc -X 5 -x 127.0.0.1:9050 %h %p
 ### Configure X2GoClient
 1. Create a new session
 2. Start with the "Session" Tab
