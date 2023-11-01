@@ -38,7 +38,7 @@ sudo cp -a $SERVERNAME/var/lib/tor/hidden_services/SSH_server $HOMEDIR_ROOT/var/
 
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys # unmount our bindmounts to clean things up
 
-while grep -q "$SERVERNAME/home" /etc/mtab ; do
+while grep -q "$SERVERNAME/home" /etc/mtab /proc/mounts ; do
 	while ! sudo umount $SERVERNAME/home ; do # keep trying to umount it
 		sudo lsof | grep "$SERVERNAME/home" # list open files in the mount path if umount failed
 		sleep 1 # the user needs a moment to read the error message ...

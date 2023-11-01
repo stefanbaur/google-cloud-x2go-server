@@ -16,7 +16,7 @@ sudo chroot $SERVERNAME service nginx stop
 sudo umount $SERVERNAME/dev/pts $SERVERNAME/dev/shm $SERVERNAME/proc $SERVERNAME/sys $SERVERNAME/home # unmount our bindmounts to clean things up
 
 # check if the user home directory is still mounted (our bindmount for persistence)
-while grep -q "$SERVERNAME/home" /etc/mtab ; do
+while grep -q "$SERVERNAME/home" /etc/mtab /proc/mounts ; do
 	while ! sudo umount $SERVERNAME/home ; do # keep trying to umount it
 		sudo lsof | grep "$SERVERNAME/home" # list open files in the mount path if umount failed
 		sleep 1 # the user needs a moment to read the error message ...
