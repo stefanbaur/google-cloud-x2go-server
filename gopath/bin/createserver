@@ -122,6 +122,7 @@ if [ -n "$USEX2GOREPO" ]; then
 	if sudo chroot $SERVERNAME apt install x2go-keyring ; then
 		# once that's done, let's remove our temporary solution
 		sudo rm $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key.asc
+		sudo rm $SERVERNAME/etc/apt/trusted.gpg.d/x2go-signing-key-old.asc
 	else
 		# this may fail; in that case, we should not attempt to remove the key
 		: # NOP
@@ -194,11 +195,12 @@ if ! [ -f $HOMEDIR_ROOT/$USERNAME/.ssh/id_rsa_${SERVERNAME///} ]; then
 	sudo chroot ${SERVERNAME} sudo -u $USERNAME mkdir -p /home/$USERNAME/.ssh
 	sudo chroot ${SERVERNAME} sudo -u $USERNAME ssh-keygen -f /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}
 	sudo chroot ${SERVERNAME} cat /home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///}.pub | sudo chroot ${SERVERNAME} tee -a /home/${USERNAME}/.ssh/authorized_keys >/dev/null
+	sudo cp ${SERVERNAME}/home/${USERNAME}/.ssh/id_rsa_${SERVERNAME///} ~/
+	sudo chown ${USER}: ~/id_rsa_${SERVERNAME///}
 	sudo chroot ${SERVERNAME} chown -R ${USERNAME}: /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 700 /home/${USERNAME}/.ssh
 	sudo chroot ${SERVERNAME} chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 fi
-
 
 # now let's prepare the TOR hidden service
 sudo rm -rf $SERVERNAME/var/lib/tor/hidden_services # delete this if it already exists, so we have a clean state
