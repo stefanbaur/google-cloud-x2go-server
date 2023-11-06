@@ -18,7 +18,7 @@ sudo apt install pixz -y
 echo "Stopping server ..."
 stopserver && echo "... stopped."
 echo "Freezing server ..."
-if (sudo tar -I"pixz -9" -cvf $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME && sudo rm -rf $SERVERNAME); then
+if (sudo tar -I"pixz -9" -cf $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz $SERVERNAME && sudo rm -rf $SERVERNAME); then
 	echo "... frozen as '$SERVERNAME-home/$SERVERNAME.tar.xz'."
 else
 	echo "An error occurred. Attempting to delete broken archive ..."

@@ -21,7 +21,7 @@ fi
 sudo apt install pixz -y
 
 echo "Thawing server ..."
-if (sudo mkdir -p $SERVERNAME && cd $SERVERNAME/.. && sudo tar -I"pixz" -xvf $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz); then
+if (sudo mkdir -p $SERVERNAME && cd $SERVERNAME/.. && sudo tar -I"pixz" -xf $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz); then
 	echo "... thawed '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz'."
 	if (sudo sudo rm $HOME/$SERVERNAME-home/$SERVERNAME.tar.xz); then
 		echo "Removed '$HOME/$SERVERNAME-home/$SERVERNAME.tar.xz'"
