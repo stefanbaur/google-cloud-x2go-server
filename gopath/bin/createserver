@@ -3,6 +3,8 @@
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 
+- /etc/os-release # also source OS info
+
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
 [ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="bullseye" # if no specific version has been requested, assume bullseye, as that is what google uses at the moment
 
@@ -46,8 +48,22 @@ sudo mount --bind $HOMEDIR_ROOT $SERVERNAME/home # here goes our homedir bind mo
 
 sudo chroot $SERVERNAME passwd -l root # lock the root account's password so no one can mess with it before we're done
 
-# prepare a sources.list for us, based on the one present in our host environment
-awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep 'debian\.org' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+# prepare a sources.list for us,
+if [ "$ID" == "debian" ] ; then 
+	# based on the one present in our host environment if it is debian
+	awk ' $0 ~ /bullseye/ { print $0 " contrib non-free" }' /etc/apt/sources.list | grep 'debian\.org' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+else
+	# using a template since we're not on a debian host
+	echo 'deb http://deb.debian.org/debian bullseye main contrib non-free
+	deb-src http://deb.debian.org/debian bullseye main contrib non-free
+
+	deb http://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+	deb-src http://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+
+	deb http://deb.debian.org/debian bullseye-updates main contrib non-free
+	deb-src http://deb.debian.org/debian bullseye-updates main contrib non-free' | sudo tee $SERVERNAME/etc/apt/sources.list >/dev/null
+
+fi
 if [ "$CHROOTDEBVERSION" = "bookworm" ]; then # replace bullseye with bookworm if requested
 	sudo sed -e 's/bullseye/bookworm/g' -e's/non-free/non-free non-free-firmware/' -i $SERVERNAME/etc/apt/sources.list
 fi
