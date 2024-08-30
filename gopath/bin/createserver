@@ -153,8 +153,9 @@ sudo chroot $SERVERNAME apt clean
 
 # add the key for the appropriate Pale Moon repo for bullseye or bookworm, and add the repo too
 if [ "$CHROOTDEBVERSION" = "bookworm" ]; then
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_12/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_12/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
+	# palemoon repo for Bookworm is only available with GTK3 builds
+	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser:palemoon-GTK3/Debian_12/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
+	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser:palemoon-GTK3/Debian_12/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
 else
 	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11/Release.key -O - | gpg --dearmor | sudo tee $SERVERNAME/etc/apt/trusted.gpg.d/home_stevenpusser.gpg > /dev/null
 	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
