@@ -1,11 +1,14 @@
 #!/bin/bash
 . ~/gopath/bin/startserver-main # source the main script
 serve_keyfile
+. ~/.gcs-x2go # source Cloud Shell X2Go Server config
 echo '1. run "gcloud cloud-shell get-mount-command sshfs" on your'
 echo '   client to determine IP, user, and port for the ssh connection'
-echo '2. configure X2GoClient for a connection to 127.0.0.1:222'
+echo '   the output will look something like this: sshfs'
+echo '   USERNAME@IP.WILL.BE.HERE: sshfs -p PORT_NUMBER -oIdentityFile=/PATH_TO_YOUR_SSH_SECRET_KEYFILE -oStrictHostKeyChecking=no'
+echo '2. configure X2GoClient for a connection to Host 127.0.0.1, Login '"${USERNAME}"', Port 222'
 echo '3. select "Use Proxy server for SSH connection"'
-echo '4. select Type SSH'
-echo '5. enter IP, user, and port as determined in Step #1'
+echo '4. select Type "SSH"'
+echo '5. enter Host (IP), Port, and Username as determined in Step #1'
 echo '6. either specify the path to your Google Cloud Shell SSH Public Key File,'
 echo '   or load the key into your SSH Agent and check the SSH Agent box.'
