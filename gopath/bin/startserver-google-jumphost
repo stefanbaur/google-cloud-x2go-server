@@ -2,6 +2,9 @@
 . ~/gopath/bin/startserver-main # source the main script
 serve_keyfile
 . ~/.gcs-x2go # source Cloud Shell X2Go Server config
+echo '0. run "gcloud cloud-shell ssh" on your client and run "createserver" or'
+echo '   "thawserver" followed by "startserver-google-jumphost" (you already did this or else'
+echo '   you would not be reading this)'
 echo '1. run "gcloud cloud-shell get-mount-command sshfs" on your'
 echo '   client to determine IP, user, and port for the ssh connection'
 echo '   the output will look something like this: sshfs'
@@ -9,6 +12,12 @@ echo '   USERNAME@IP.WILL.BE.HERE: sshfs -p PORT_NUMBER -oIdentityFile=/PATH_TO_
 echo '2. configure X2GoClient for a connection to Host 127.0.0.1, Login '"${USERNAME}"', Port 222'
 echo '3. select "Use Proxy server for SSH connection"'
 echo '4. select Type "SSH"'
-echo '5. enter Host (IP), Port, and Username as determined in Step #1'
+echo '5. enter Host (IP), Port, and Username as determined in step #1'
 echo '6. either specify the path to your Google Cloud Shell SSH Public Key File,'
 echo '   or load the key into your SSH Agent and check the SSH Agent box.'
+echo '7. make sure you either keep your "gcloud cloud-shell ssh" session running'
+echo '   or actually run the command shown in step #1 and keep the sshfs mounted'
+echo '   while you intend to use your X2Go Cloud Server. Do not forget to run'
+echo '   "fusermount -u YOUR_SSHFS_MOUNTPOINT" (the mountpoint is usually ~/sshfs)'
+echo '   once you are done or your instance will keep running - remember, your usage'
+echo '   is limited to a certain amount of hours in a seven-day window!'
