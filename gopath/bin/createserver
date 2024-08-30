@@ -107,8 +107,8 @@ sudo chroot $SERVERNAME apt dist-upgrade -y # install second batch
 sudo chroot $SERVERNAME apt clean 
 
 # and finally, let's install the packages needed for an average office desktop
-sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -d -y
-sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr chromium less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -d -y
+sudo chroot $SERVERNAME apt install dirmngr evince firefox-esr chromium less libreoffice mc net-tools openssh-server rsync screen sudo thunderbird tor vim xfce4 xfce4-terminal -y
 sudo chroot $SERVERNAME apt clean
 
 # To install X2Go's HTML5 client, we currently need to use the heuler (nightly) repository
