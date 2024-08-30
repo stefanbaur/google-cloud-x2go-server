@@ -3,7 +3,7 @@
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 
-- /etc/os-release # also source OS info
+. /etc/os-release # also source OS info
 
 [ -z "$SERVERNAME" ] && exit 1 # no server name? That's a hard error, so let's bail out
 [ -z "$CHROOTDEBVERSION" ] && export CHROOTDEBVERSION="bullseye" # if no specific version has been requested, assume bullseye, as that is what google uses at the moment
