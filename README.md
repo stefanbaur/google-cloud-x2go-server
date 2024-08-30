@@ -35,7 +35,7 @@ KDrive is a replacement protocol for NoMachine NX, the protocol that X2Go has be
 Note that you only need to set up one connection method (Tor, Google Cloud SDK, external jumphost) to the server, but you can set up as many as you like.
 
 ### Install required packages - all methods
-	sudo apt install tor netcat x2goclient
+	sudo apt install x2goclient
 Afterwards, run the command <code>dpkg -l x2gokdriveclient | grep "^ii"</code>. If it does not return an empty result on your client, you can also try out our new KDrive protocol in addition to NooMachine NX (X2Go's default).
 If it _does_ come up empty, then you can try installing it manually with
 	sudo apt install x2gokdriveclient
