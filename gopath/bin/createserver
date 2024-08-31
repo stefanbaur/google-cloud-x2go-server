@@ -172,7 +172,7 @@ if sudo chroot $SERVERNAME apt search '^palemoon$' | grep -q palemoon ; then
 	sudo chroot $SERVERNAME apt clean
 fi
 
-sudo chroot $SERVERNAME useradd -m $USERNAME -s /bin/bash # create the first regular user account in our changeroot
+sudo chroot $SERVERNAME useradd -G users -m $USERNAME -s /bin/bash # create the first regular user account in our changeroot
 
 # if we have SSH server keys and/or ssh client configuration data for root (known_hosts, authorized_keys, ...) stowed away from a previous run, reuse it
 if [ -d $HOMEDIR_ROOT/etc/ssh/ ] ; then
