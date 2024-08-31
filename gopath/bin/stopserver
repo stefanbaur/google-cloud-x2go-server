@@ -20,14 +20,14 @@ USERLIST=$( echo "$USERNAME $(sudo chroot $SERVERNAME getent group users | awk -
 
 # if gpg-agent is still running in the changeroot (it may get spawned by a desktop environment), stop it
 if sudo chroot $SERVERNAME ps -C gpg-agent ; then
-        for ACTIVE_USER in "$USERLIST" ; do
+        for ACTIVE_USER in $USERLIST ; do
         	sudo chroot $SERVERNAME killall -u $ACTIVE_USER -w gpg-agent
 	done
 fi
 
 # if xiccd is still running in the changeroot (it may get spawned by a desktop environment), stop it
 if sudo chroot $SERVERNAME ps -C xiccd ; then
-	for ACTIVE_USER in "$USERLIST" ; do
+	for ACTIVE_USER in $USERLIST ; do
         	sudo chroot $SERVERNAME killall -u $ACTIVE_USER -w xiccd
 	done
 fi
