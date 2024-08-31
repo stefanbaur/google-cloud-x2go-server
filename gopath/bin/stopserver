@@ -15,16 +15,19 @@ sudo chroot $SERVERNAME service ssh stop
 sudo chroot $SERVERNAME service fcgiwrap stop
 sudo chroot $SERVERNAME service nginx stop
 
+# compile list of users; in older incarnations, $USERNAME was not part of the "users" group
+USERLIST=$( echo "$USERNAME $(sudo chroot $SERVERNAME getent group users | awk -F':' '{ print $4 }' | tr ',' ' ')" | sort -u)
+
 # if gpg-agent is still running in the changeroot (it may get spawned by a desktop environment), stop it
 if sudo chroot $SERVERNAME ps -C gpg-agent ; then
-        for ACTIVE_USER in "$USERNAME $(sudo chroot $SERVERNAME getent group users|awk -F':' '{ print $4 }' | tr ',' ' ')"; do
+        for ACTIVE_USER in "$USERLIST" ; do
         	sudo chroot $SERVERNAME killall -u $ACTIVE_USER -w gpg-agent
 	done
 fi
 
 # if xiccd is still running in the changeroot (it may get spawned by a desktop environment), stop it
 if sudo chroot $SERVERNAME ps -C xiccd ; then
-	for ACTIVE_USER in "$USERNAME $(sudo chroot $SERVERNAME getent group users|awk -F':' '{ print $4 }' | tr ',' ' ')"; do
+	for ACTIVE_USER in "$USERLIST" ; do
         	sudo chroot $SERVERNAME killall -u $ACTIVE_USER -w xiccd
 	done
 fi
