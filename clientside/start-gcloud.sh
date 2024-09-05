@@ -179,6 +179,22 @@ for REMOTEUSER in $REMOTEUSERLIST; do
 		#-e "s#AUTOLOGINKEY#$AUTOLOGINKEY#g" \
 		#-e "s#GCLOUDKEYFILE#$SSH_KEYFILE#" \
 done
+if dpkg -l x2gokdriveclient >/dev/null 2>&1 ; then
+	sed -e '/[.*]/a kdrive=true' -i ~/.x2goclient/gcs-sessions
+	echo 'INFO: Found x2gokdriveclient package. Enabling X2Go-KDrive as default session protocol.'
+elif [ "$1" == "--init" ] ; then
+	echo 'INFO: Will now attempt to install x2gokdriveclient.'
+	sudo apt install x2goclient -y
+	if dpkg -l x2gokdriveclient >/dev/null 2>&1 ; then
+		sed -e '/[.*]/a kdrive=true' -i ~/.x2goclient/gcs-sessions
+		echo 'INFO: Found x2gokdriveclient package. Enabling X2Go-KDrive as default session protocol.'
+	else
+		echo 'WARNING: Installation of x2gokdriveclient failed. Sticking with X2Go-NX as default session protocol.'
+	fi
+else
+	echo 'INFO: No x2gokdriveclient package detected. Sticking with X2Go-NX as default session protocol.'
+	echo 'INFO: Call this script with "'$0' --init" to install x2goclient (requires sudo rights).'
+fi
 
 echo 'INFO: Starting X2GoClient.'
 x2goclient --add-to-known-hosts --session="GCS-X2Go $USERNAME" --session-conf=~/.x2goclient/gcs-sessions >/dev/null 2>&1 & 
