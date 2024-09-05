@@ -5,6 +5,15 @@ if ( [ "CLOUD_SHELL" == "true" ] || [ "GOOGLE_CLOUD_SHELL" == "true" ] ) ; then
 	exit 1
 fi
 
+if [ -z "$(which sshfs)" ] ; then
+	echo "ERROR: No sshfs executable found. Aborting."
+	[ -n "$(which sudo)" ] && echo 'INFO: Call this script with "'$0' --init" to install sshfs (requires sudo rights).'
+	exit 1
+else
+	echo "Attempting to install sshfs."
+	sudo apt install sshfs -y
+fi
+
 if ! mkdir -p ~/sshfs ; then
 	echo 'ERROR: Could not create sshfs mount point "~/sshfs". Aborting.'
 	exit 1
