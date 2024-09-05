@@ -108,7 +108,7 @@ if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 	if [ "$FREEZER_STATE" == "EMPTYFREEZER" ] ; then
 		if [ "$1" == "--init" ] ; then
 			echo 'INFO: Attempting to create a new server instance.'
-			ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/createserver' 2>/dev/null
+			ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/createserver' 2>/dev/null || exit 1
 		else
 			echo 'ERROR: No frozen server image found. Aborting.'
 			echo 'INFO: Call this script with "'$0' --init" to create a new server instance.'
