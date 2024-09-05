@@ -71,6 +71,10 @@ if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 else
 	echo 'INFO: Server directory already present, attempting to use that'
 fi
+
+# Spawn the server
+ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
+
 # Add PUBKEY to default user, if not already present
 PUBKEY=$(cat ${SSH_KEYFILE}.pub)
 if ! grep -q "$PUBKEY" ~/sshfs/${SERVERNAME}/home/${USERNAME}/.ssh/authorized_keys ; then
@@ -106,9 +110,6 @@ done
 
 echo 'INFO: Starting X2GoClient.'
 x2goclient --session-conf=~/.x2goclient/gcs-sessions &
-
-# Spawn the server
-ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
 
 echo 'INFO: Please leave this shell open and cause some activity in it to keep the connection alive.'
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP
