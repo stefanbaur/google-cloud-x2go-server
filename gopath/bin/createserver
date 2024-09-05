@@ -6,6 +6,15 @@ if ! ( [ "$CLOUD_SHELL" == "true" ] || [ "$GOOGLE_CLOUD_SHELL" == "true" ] ) ; t
 	exit 1
 fi
 
+# Google prefers tmux over screen; it's installed already and cloud shell via
+# Web Browser uses it by default, so make sure we're using it too - this is
+# for connecting directly via "gcloud cloud-shell ssh", which normally doesn't
+# spawn tmux - so a loss of connection means an undefined state regarding
+# the currently running job. For jobs like freezeserver and thawserver, this
+# can be very frustrating. So now we respawn them within tmux if it's not
+# already running, thereby increasing the chance of a successful reconnect.
+which tmux >/dev/null && [ -n "$TMUX" ] || exec tmux new-session "$0" "$@"
+
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 
