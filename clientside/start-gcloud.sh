@@ -60,10 +60,9 @@ fi
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '! (test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz && test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) && sudo ln ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz ~/'"${SERVERNAME}"'-home/'${SERVERNAME}'.tar.xz ' 2>/dev/null
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '! (test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz && test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) && sudo ln ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz ~/'"${SERVERNAME}"'-home/'${SERVERNAME}'-backup.tar.xz' 2>/dev/null
 
-# Start thawing the server and spawn the instance
+# Start thawing the server
 echo 'INFO: Attempting to thaw the server.'
 ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/thawserver 2>&1 | tee ~/thawserver-log' 2>/dev/null || exit 1
-ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
 
 # Add PUBKEY to default user, if not already present
 PUBKEY=$(cat ${SSH_KEYFILE}.pub)
@@ -100,6 +99,9 @@ done
 
 echo 'INFO: Starting X2GoClient.'
 x2goclient --session-conf=~/sshfs/google-cloud-x2go-server/clientside/gcs-sessions &
+
+# Spawn the server
+ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
 
 echo 'INFO: Please leave this shell open and cause some activity in it to keep the connection alive.'
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP
