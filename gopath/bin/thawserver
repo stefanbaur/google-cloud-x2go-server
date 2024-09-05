@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if ! [ "CLOUD_SHELL" == "true" ] ; then
+if ! ( [ "CLOUD_SHELL" == "true" ] || [ "GOOGLE_CLOUD_SHELL" == "true" ] ) ; then
 	echo 'ERROR: No Google Cloud Shell environment detected. Aborting.'
 	exit 1
 fi
