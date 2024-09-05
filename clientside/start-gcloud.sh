@@ -50,19 +50,19 @@ fi
 
 # "source" remote config file
 eval $(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'test -s ~/.gcs-x2go && cat ~/.gcs-x2go | grep -v "^ *#"' 2>/dev/null)
-FREEZER_STATE=$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '(test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz || test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) || echo "EMPTYFREEZER"')
+FREEZER_STATE=$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '(test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz || test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) 2>/dev/null || echo "EMPTYFREEZER"')
 
 if [ "$FREEZER_STATE" == "EMPTYFREEZER" ] ; then
 	echo 'ERROR: No frozen server image found. Aborting.'
 	exit 1
 fi
-
 # if both our frozen images exist, do nothing, else try to hardlink the first with the second; if that fails, the second with the first
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '! (test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz && test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) && sudo ln ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz ~/'"${SERVERNAME}"'-home/'${SERVERNAME}'.tar.xz ' 2>/dev/null
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '! (test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz && test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) && sudo ln ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz ~/'"${SERVERNAME}"'-home/'${SERVERNAME}'-backup.tar.xz' 2>/dev/null
 
 # Start thawing the server and spawn the instance
-ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'tmux -c ~/gopath/bin/thawserver' 2>/dev/null || exit 1
+echo 'INFO: Attempting to thaw the server.'
+ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/thawserver 2>&1 | tee ~/thawserver-log' 2>/dev/null || exit 1
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
 
 # Add PUBKEY to default user, if not already present
