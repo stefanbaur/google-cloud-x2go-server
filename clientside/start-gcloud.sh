@@ -51,7 +51,11 @@ if [ -n "$CLOUD_OUTPUT" ]; then
 	fi
 fi
 # "source" remote config file
-eval $(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'test -s ~/.gcs-x2go && cat ~/.gcs-x2go | grep -v "^ *#"' 2>/dev/null)
+if [ -s ~/sshfs/home/${SSH_USER}/.gcs-x2go ] ; then
+	eval $(test -s ~/sshfs/home/${SSH_USER}/.gcs-x2go && cat ~/sshfs/home/${SSH_USER}/.gcs-x2go | grep -v "^ *#" 2>/dev/null)
+else
+	echo 'ERROR: Config file ~/sshfs/home/"'${SSH_USER}'"/.gcs-x2go not found. Aborting.'
+fi
 if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 	FREEZER_STATE=$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '(test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz || test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) 2>/dev/null || echo "EMPTYFREEZER"')
 
