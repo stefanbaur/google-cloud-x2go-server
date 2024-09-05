@@ -53,15 +53,57 @@ fi
 # "source" remote config file
 if [ -s ~/sshfs/home/${SSH_USER}/.gcs-x2go ] ; then
 	eval $(test -s ~/sshfs/home/${SSH_USER}/.gcs-x2go && cat ~/sshfs/home/${SSH_USER}/.gcs-x2go | grep -v "^ *#" 2>/dev/null)
+elif [ "$1" == "--init" ] ; then
+	echo 'export SERVER_USE_ROOT=true
+export USEX2GOREPO=stable
+export SERVERNAME=demobox
+export CHROOTDEBVERSION="bookworm"
+export USERNAME=jdoe
+export USERREALNAME="John Doe"' >  ~/sshfs/home/${SSH_USER}/.gcs-x2go
+	echo 'INFO: Created minimal, generic config file.'
 else
 	echo 'ERROR: Config file ~/sshfs/home/"'${SSH_USER}'"/.gcs-x2go not found. Aborting.'
+	echo 'INFO: Call this script with "'$0' --init" to use a minimal, generic config file.'
+	exit 1
 fi
+
+if [ -d ~/sshfs/home/${SSH_USER}/google-cloud-x2go-server ] ; then
+	echo 'INFO: Found remote git/script directory.'
+elif [ "$1" == "--init" ] ; then
+	echo 'INFO: Will now create remote git/script directory.'
+	git clone $(grep url ../.git/config | awk -F'=' '{ print $2 }')  ~/sshfs/home/${SSH_USER}/google-cloud-x2go-server/
+else
+	echo 'ERROR: git/script directory ~/sshfs/home/"'${SSH_USER}'"/google-cloud-x2go-server not found. Aborting.'
+	echo 'INFO: Call this script with "'$0' --init" to run git clone the repo into that directory.'
+	exit 1
+fi
+
+if [ -x ~/sshfs/home/${SSH_USER}/gopath/bin/stopserver ] ; then
+	echo 'INFO: At least one of our scripts is executable and in the default search path on the remote end.'
+elif [ "$1" == "--init" ] ; then
+	echo 'INFO: Will now replace the old gopath directory with our own.'
+	if [ -e ~/sshfs/home/${SSH_USER}/gopath ]; then
+		mv ~/sshfs/home/${SSH_USER}/gopath ~/sshfs/home/${SSH_USER}/old_gopath
+	fi
+	(cd ~/sshfs/home/${SSH_USER} ; ln -sf gopath google-cloud-x2go-server/gopath)
+else
+	echo 'ERROR: Our scripts are not executable and/or not in the default search path on the remote end. Aborting.'
+	echo 'INFO: Call this script with "'$0' --init" to try to automatically fix this by moving "~/sshfs/home/'${SSH_USER}'/gopath" somewhere else.'
+	exit 1
+fi
+
 if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 	FREEZER_STATE=$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '(test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz || test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) 2>/dev/null || echo "EMPTYFREEZER"')
 
 	if [ "$FREEZER_STATE" == "EMPTYFREEZER" ] ; then
-		echo 'ERROR: No frozen server image found. Aborting.'
-		exit 1
+		if [ "$1" == "--init" ] ; then
+			echo 'INFO: Attempting to create a new server instance.'
+			ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/createserver >/dev/null' 2>/dev/null
+		else
+			echo 'ERROR: No frozen server image found. Aborting.'
+			echo 'INFO: Call this script with "'$0' --init" to create a new server instance.'
+			exit 1
+		fi
 	else
 		echo 'INFO: Frozen server image found.'
 	fi
