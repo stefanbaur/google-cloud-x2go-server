@@ -19,6 +19,12 @@ SSH_IP=$(echo -e "$CLOUD_OUTPUT" | tr ':@' '  ' | awk '$1=="sshfs" {print $3 }')
 SSH_PORT=$(echo -e "$CLOUD_OUTPUT" | awk '$1=="sshfs" {print $5 }')
 SSH_KEYFILE=$(echo -e "$CLOUD_OUTPUT" | tr '=' ' ' | awk '$1=="sshfs" {print $7 }')
 SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+if [ -z "$SSH_AGENT_PID" ] || [ -z "$SSH_AUTH_SOCK" ] ; then
+	eval $(ssh-agent)
+fi
+ssh-add $SSH_KEYFILE
+
 if grep 'fuse.sshfs' /proc/mounts | grep ~/sshfs | grep -q "${SSH_USER}@${SSH_IP}" ; then
 	# we're already mounted, nothing to do
 	echo "INFO: Already mounted"
@@ -55,6 +61,12 @@ ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '! (test -s ~
 # Start thawing the server and spawn the instance
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'tmux ~/gopath/bin/thawserver' 2>/dev/null || exit 1
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
+
+# Add PUBKEY to default user, if not already present
+PUBKEY=$(cat ${SSH_KEYFILE}.pub)
+if ! grep -q "$PUBKEY" ~/sshfs/${SERVERNAME}-home/${USERNAME}/.ssh/authorized_keys ; then
+	echo "$PUBKEY">> ~/sshfs/${SERVERNAME}-home/${USERNAME}/.ssh/authorized_keys
+fi
 
 REMOTEUSERLIST=$(echo -e "${USERNAME}\n$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'sudo chroot /'"${SERVERNAME}"' getent group users' 2>/dev/null | awk -F ':' '{ print $4 }' | tr ',' '\n')" | sort -u | tr '\n' ' ')
 
