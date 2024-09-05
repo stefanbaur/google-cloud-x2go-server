@@ -9,7 +9,7 @@ if [ -z "$(which sshfs)" ] ; then
 	echo "ERROR: No sshfs executable found. Aborting."
 	[ -n "$(which sudo)" ] && echo 'INFO: Call this script with "'$0' --init" to install sshfs (requires sudo rights).'
 	exit 1
-else
+elif [ "$1" == "--init" ] ; then
 	echo "Attempting to install sshfs."
 	sudo apt install sshfs -y
 fi
