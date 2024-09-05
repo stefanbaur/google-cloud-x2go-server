@@ -181,7 +181,7 @@ for REMOTEUSER in $REMOTEUSERLIST; do
 done
 
 echo 'INFO: Starting X2GoClient.'
-x2goclient --session-conf=~/.x2goclient/gcs-sessions >/dev/null 2>&1 & 
+x2goclient --session="GCS-X2Go $USERNAME" --session-conf=~/.x2goclient/gcs-sessions >/dev/null 2>&1 & 
 
 echo 'INFO: Please leave this shell open and cause some activity in it to keep the connection alive.'
 ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 2>/dev/null
