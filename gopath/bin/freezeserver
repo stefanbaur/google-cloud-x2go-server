@@ -12,7 +12,7 @@ fi
 # the currently running job. For jobs like freezeserver and thawserver, this
 # can be very frustrating. So now we respawn them within tmux if it's not
 # already running, thereby increasing the chance of a successful reconnect.
-which tmux >/dev/null && [ -n "$TMUX" ] || exec tmux "$0" "$@"
+which tmux >/dev/null && [ -n "$TMUX" ] || exec tmux -c "$0" "$@"
 
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
