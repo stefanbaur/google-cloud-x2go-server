@@ -134,8 +134,13 @@ ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin
 
 # Add PUBKEY to default user, if not already present
 PUBKEY=$(cat ${SSH_KEYFILE}.pub)
-if ! grep -q "$PUBKEY" ~/sshfs/${SERVERNAME}/home/${USERNAME}/.ssh/authorized_keys ; then
-	echo "$PUBKEY">> ~/sshfs/${SERVERNAME}/home/${USERNAME}/.ssh/authorized_keys
+
+if grep 'fuse.sshfs' /proc/mounts | grep "${HOME}/sshfs " | grep -q "${SSH_USER}@${SSH_IP}:/" ; then
+	if ! grep -q "$PUBKEY" ~/sshfs/${SERVERNAME}/home/${USERNAME}/.ssh/authorized_keys ; then
+		echo "$PUBKEY">> ~/sshfs/${SERVERNAME}/home/${USERNAME}/.ssh/authorized_keys
+	fi
+else
+	echo 'WARNING: Our sshfs mount has disappeared! Cannot add pubkey. Continuing anyways ...'
 fi
 
 REMOTEUSERLIST=$(echo -e "${USERNAME}\n$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'sudo chroot /'"${SERVERNAME}"' getent group users' 2>/dev/null | awk -F ':' '{ print $4 }' | tr ',' '\n')" | sort -u | tr '\n' ' ')
