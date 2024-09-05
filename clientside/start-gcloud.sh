@@ -108,7 +108,7 @@ if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 	if [ "$FREEZER_STATE" == "EMPTYFREEZER" ] ; then
 		if [ "$1" == "--init" ] ; then
 			echo 'INFO: Attempting to create a new server instance.'
-			ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/createserver >/dev/null' 2>/dev/null
+			ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/createserver 2>&1 | tee ~/createserver.log' 2>/dev/null
 		else
 			echo 'ERROR: No frozen server image found. Aborting.'
 			echo 'INFO: Call this script with "'$0' --init" to create a new server instance.'
@@ -122,7 +122,7 @@ if ! [ -x ~/sshfs/${SERVERNAME}/bin/bash ]; then
 
 		# Start thawing the server
 		echo 'INFO: Attempting to thaw the server.'
-		ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/thawserver 2>&1 | tee ~/thawserver-log' 2>/dev/null || exit 1
+		ssh -t -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/thawserver 2>&1 | tee ~/thawserver.log' 2>/dev/null || exit 1
 	fi
 else
 	echo 'INFO: Server directory already present, attempting to use that'
