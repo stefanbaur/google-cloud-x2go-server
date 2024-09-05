@@ -73,7 +73,7 @@ else
 fi
 
 # Spawn the server
-ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost' 2>/dev/null
+ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '~/gopath/bin/startserver-google-jumphost >/dev/null' 2>/dev/null
 
 # Add PUBKEY to default user, if not already present
 PUBKEY=$(cat ${SSH_KEYFILE}.pub)
@@ -97,20 +97,22 @@ for REMOTEUSER in $REMOTEUSERLIST; do
 		AUTOLOGINKEY=""
 	fi
 	TIMESTAMP_HEADER=$(date +%F%T%N | tr -d -c '[:digit:]' | cut -b 1-15)
-	sed 	-e "s/TIMESTAMP/$TIMESTAMP_HEADER/" \
-		-e "s/USERNAME/$REMOTEUSER/g" \
-		-e "s/AUTOLOGINSTATE/$AUTOLOGINSTATE/g" \
-		-e "s#AUTOLOGINKEY#$AUTOLOGINKEY#g" \
-		-e "s/PROXYIP/$SSH_IP/" \
-		-e "s/PROXYPORT/$SSH_PORT/" \
-		-e "s/GCLOUDACCOUNT/$SSH_USER/" \
-		-e "s#GCLOUDKEYFILE#$SSH_KEYFILE#" \
+        sed     -e "s/TIMESTAMP/$TIMESTAMP_HEADER/" \
+                -e "s/USERNAME/$REMOTEUSER/g" \
+                -e "s/AUTOLOGINSTATE/$AUTOLOGINSTATE/g" \
+                -e "s#AUTOLOGINKEY##g" \
+                -e "s/PROXYIP/$SSH_IP/" \
+                -e "s/PROXYPORT/$SSH_PORT/" \
+                -e "s/GCLOUDACCOUNT/$SSH_USER/" \
+                -e "s#GCLOUDKEYFILE##" \
 		~/sshfs/home/${SSH_USER}/google-cloud-x2go-server/clientside/gcs-session-template >> ~/.x2goclient/gcs-sessions
+		#-e "s#AUTOLOGINKEY#$AUTOLOGINKEY#g" \
+		#-e "s#GCLOUDKEYFILE#$SSH_KEYFILE#" \
 done
 
 echo 'INFO: Starting X2GoClient.'
-x2goclient --session-conf=~/.x2goclient/gcs-sessions &
+x2goclient --session-conf=~/.x2goclient/gcs-sessions >/dev/null 2>&1 & 
 
 echo 'INFO: Please leave this shell open and cause some activity in it to keep the connection alive.'
-ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP
+ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 2>/dev/null
 
