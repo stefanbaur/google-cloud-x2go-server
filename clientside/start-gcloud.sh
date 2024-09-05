@@ -95,7 +95,7 @@ elif [ "$1" == "--init" ] ; then
 	if [ -e ~/sshfs/home/${SSH_USER}/gopath ]; then
 		mv ~/sshfs/home/${SSH_USER}/gopath ~/sshfs/home/${SSH_USER}/old_gopath
 	fi
-	(cd ~/sshfs/home/${SSH_USER} ; ln -sf gopath google-cloud-x2go-server/gopath)
+	(cd ~/sshfs/home/${SSH_USER} ; ln -sf google-cloud-x2go-server/gopath gopath)
 else
 	echo 'ERROR: Our scripts are not executable and/or not in the default search path on the remote end. Aborting.'
 	echo 'INFO: Call this script with "'$0' --init" to try to automatically fix this by moving "~/sshfs/home/'${SSH_USER}'/gopath" somewhere else.'
