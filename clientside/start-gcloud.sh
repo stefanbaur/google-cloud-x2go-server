@@ -40,7 +40,7 @@ if [ -n "$CLOUD_OUTPUT" ]; then
 fi
 
 # "source" remote config file
-eval $(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'test -s ~/.gcs-x2go && cat ~/.gcs-x2go' 2>/dev/null)
+eval $(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP 'test -s ~/.gcs-x2go && cat ~/.gcs-x2go | grep -v "^ *#"' 2>/dev/null)
 FREEZER_STATE=$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_KEYFILE $SSH_OPTIONS $SSH_IP '(test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'.tar.xz || test -s ~/'"${SERVERNAME}"'-home/'"${SERVERNAME}"'-backup.tar.xz) || echo "EMPTYFREEZER"')
 
 if [ "$FREEZER_STATE" == "EMPTYFREEZER" ] ; then
@@ -60,7 +60,9 @@ REMOTEUSERLIST=$(echo -e "${USERNAME}\n$(ssh -l $SSH_USER -p $SSH_PORT -i $SSH_K
 
 echo 'INFO: Creating X2Go Session Config file in "~/sshfs/google-cloud-x2go-server/clientside/gcs-sessions".'
 
-echo > ~/.x2go/gcs-sessions
+mkdir -p ~/.x2goclient
+# create empty file
+: > ~/.x2goclient/gcs-sessions
 for REMOTEUSER in $REMOTEUSERLIST; do
 	TIMESTAMP_HEADER=$(date +%F%T%N | tr -d -c '[:digit:]' | cut -b 1-15)
 	sed 	-e "s/TIMESTAMP/$TIMESTAMP_HEADER/" \
@@ -68,8 +70,8 @@ for REMOTEUSER in $REMOTEUSERLIST; do
 		-e "s/PROXYIP/$SSH_IP/" \
 		-e "s/PROXYPORT/$SSH_PORT/" \
 		-e "s/GCLOUDACCOUNT/$SSH_USER/" \
-		-e "s/GCLOUDKEYFILE/$SSH_KEYFILE/" \
-		~/sshfs/google-cloud-x2go-server/clientside/gcs-session-template >> ~/sshfs/google-cloud-x2go-server/clientside/gcs-sessions
+		-e "s#GCLOUDKEYFILE#$SSH_KEYFILE#" \
+		~/sshfs/google-cloud-x2go-server/clientside/gcs-session-template >> ~/.x2goclient/gcs-sessions
 done
 
 echo 'INFO: Starting X2GoClient.'
