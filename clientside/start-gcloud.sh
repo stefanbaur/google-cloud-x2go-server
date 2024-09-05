@@ -5,6 +5,14 @@ if ( [ "CLOUD_SHELL" == "true" ] || [ "GOOGLE_CLOUD_SHELL" == "true" ] ) ; then
 	exit 1
 fi
 
+if [ -z "$(which x2goclient)" ] ; then
+	echo "WARNING: No x2goclient executable found. Continuing anyways ..."
+	[ -n "$(which x2goclient)" ] && echo 'INFO: Call this script with "'$0' --init" to install x2goclient (requires sudo rights).'
+elif [ -z "$(which x2goclient)" ] && [ "$1" == "--init" ] ; then
+	echo "Attempting to install x2goclient."
+	sudo apt install x2goclient -y
+fi
+
 if [ -z "$(which sshfs)" ] ; then
 	echo "ERROR: No sshfs executable found. Aborting."
 	[ -n "$(which sudo)" ] && echo 'INFO: Call this script with "'$0' --init" to install sshfs (requires sudo rights).'
