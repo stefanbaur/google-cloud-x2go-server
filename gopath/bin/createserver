@@ -1,5 +1,11 @@
 #!/bin/bash -e
 # for safety reasons, abort on all errors -> "-e"
+
+if ! [ "CLOUD_SHELL" == "true" ] ; then
+	echo 'ERROR: No Google Cloud Shell environment detected. Aborting.'
+	exit 1
+fi
+
 cd ~ # just to play it safe, we'll chdir to our own homedir
 . ~/.gcs-x2go # now let's source the config file
 

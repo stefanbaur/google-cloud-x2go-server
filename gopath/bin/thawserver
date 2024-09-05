@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+if ! [ "CLOUD_SHELL" == "true" ] ; then
+	echo 'ERROR: No Google Cloud Shell environment detected. Aborting.'
+	exit 1
+fi
+
 # Google prefers tmux over screen; it's installed already and cloud shell via
 # Web Browser uses it by default, so make sure we're using it too - this is
 # for connecting directly via "gcloud cloud-shell ssh", which normally doesn't

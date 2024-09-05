@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if ! [ "CLOUD_SHELL" == "true" ] ; then
+	echo 'ERROR: No Google Cloud Shell environment detected. Aborting.'
+	exit 1
+fi
+
 . ~/gopath/bin/startserver-main # source the main script
 serve_keyfile
 . ~/.gcs-x2go # source Cloud Shell X2Go Server config
