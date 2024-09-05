@@ -69,7 +69,8 @@ export SERVERNAME=demobox
 export CHROOTDEBVERSION="bookworm"
 export USERNAME=jdoe
 export USERREALNAME="John Doe"' >  ~/sshfs/home/${SSH_USER}/.gcs-x2go
-	echo 'INFO: Created minimal, generic config file.'
+	eval $(test -s ~/sshfs/home/${SSH_USER}/.gcs-x2go && cat ~/sshfs/home/${SSH_USER}/.gcs-x2go | grep -v "^ *#" 2>/dev/null)
+	echo 'INFO: Created minimal, generic config file and sourced it.'
 else
 	echo 'ERROR: Config file ~/sshfs/home/"'${SSH_USER}'"/.gcs-x2go not found. Aborting.'
 	echo 'INFO: Call this script with "'$0' --init" to use a minimal, generic config file.'
