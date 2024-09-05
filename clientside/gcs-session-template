@@ -1,6 +1,6 @@
 [TIMESTAMP]
 applications=WWWBROWSER, MAILCLIENT, OFFICE, TERMINAL
-autologin=false
+autologin=AUTOLOGINSTATE
 clipboard=both
 command=XFCE
 defsndport=true
@@ -19,7 +19,7 @@ icon=:/img/icons/128x128/x2gosession.png
 iconvfrom=ISO8859-1
 iconvto=UTF-8
 kdrive=false
-key=
+key=AUTOLOGINKEY
 krbdelegation=false
 krblogin=false
 maxdim=false

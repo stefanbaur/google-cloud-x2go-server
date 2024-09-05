@@ -76,9 +76,18 @@ mkdir -p ~/.x2goclient
 # create empty file
 : > ~/.x2goclient/gcs-sessions
 for REMOTEUSER in $REMOTEUSERLIST; do
+	if [ "$REMOTEUSER" == "$USERNAME" ] ; then
+		AUTOLOGINSTATE="true"
+		AUTOLOGINKEY="$SSH_KEYFILE"
+	else
+		AUTOLOGINSTATE="false"
+		AUTOLOGINKEY=""
+	fi
 	TIMESTAMP_HEADER=$(date +%F%T%N | tr -d -c '[:digit:]' | cut -b 1-15)
 	sed 	-e "s/TIMESTAMP/$TIMESTAMP_HEADER/" \
 		-e "s/USERNAME/$REMOTEUSER/g" \
+		-e "s/AUTOLOGINSTATE/$AUTOLOGINSTATE/g" \
+		-e "s/AUTOLOGINSTATE/$AUTOLOGINKEY/g" \
 		-e "s/PROXYIP/$SSH_IP/" \
 		-e "s/PROXYPORT/$SSH_PORT/" \
 		-e "s/GCLOUDACCOUNT/$SSH_USER/" \
