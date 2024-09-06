@@ -166,7 +166,7 @@ for REMOTEUSER in $REMOTEUSERLIST; do
 		AUTOLOGINSTATE="false"
 		AUTOLOGINKEY=""
 	fi
-	TIMESTAMP_HEADER=$(date +%F%T%N | tr -d -c '[:digit:]' | cut -b 1-15)
+	TIMESTAMP_HEADER=$(date +%F%T%N | tr -d -c '[:digit:]' | cut -b 1-17)
         sed     -e "s/TIMESTAMP/$TIMESTAMP_HEADER/" \
                 -e "s/USERNAME/$REMOTEUSER/g" \
                 -e "s/AUTOLOGINSTATE/$AUTOLOGINSTATE/g" \
