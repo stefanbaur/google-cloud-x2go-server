@@ -166,16 +166,9 @@ sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession x2goclient -d
 sudo chroot $SERVERNAME apt install x2goserver x2goserver-xsession x2goclient -y
 sudo chroot $SERVERNAME apt clean
 
-# add the key for the appropriate Pale Moon repo for bullseye or bookworm, and add the repo too
-if [ "$CHROOTDEBVERSION" = "bookworm" ]; then
-	# palemoon repo for Bookworm is only available with GTK3 builds
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser:palemoon-GTK3/Debian_12/Release.key -O - | sudo chroot $SERVERNAME apt-key add -
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser:/palemoon-GTK3/Debian_12/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
-else
-	wget -qnv https://download.opensuse.org/repositories/home:stevenpusser/Debian_11/Release.key -O - | gpg --dearmor | sudo tee $SERVERNAME/etc/apt/trusted.gpg.d/home_stevenpusser.gpg > /dev/null
-	echo 'deb http://download.opensuse.org/repositories/home:/stevenpusser/Debian_11/ /' | sudo tee $SERVERNAME/etc/apt/sources.list.d/home:stevenpusser.list >/dev/null
-
-fi
+# add the key for the Pale Moon repo, and add the repo too
+sudo wget https://kannegieser.net/palemoon/veit@kannegieser.net.gpg -O $SERVERNAME//usr/share/keyrings/veit@kannegieser.net.gpg 
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/veit@kannegieser.net.gpg] https://kannegieser.net/palemoon avx2_gtk2 main' | sudo tee $SERVERNAME/etc/apt/sources.list.d/palemoon.list >/dev/null
 
 # now update the sources.list info again
 sudo chroot $SERVERNAME apt update
